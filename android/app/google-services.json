@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "624486728323",
+    "firebase_url": "https://archemy-8c6f3.firebaseio.com",
+    "project_id": "archemy-8c6f3",
+    "storage_bucket": "archemy-8c6f3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:624486728323:android:52517615d73ebd0a76d1b6",
+        "android_client_info": {
+          "package_name": "com.wizardblink.alchemy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "624486728323-m6oaaj948ute9kot0rlbaj4tbekeh4qg.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.wizardblink.alchemy",
+            "certificate_hash": "0259e1b0e23e440ce47cd5f81190b3a4a74dcdc5"
+          }
+        },
+        {
+          "client_id": "624486728323-23bt5nv1tpma3tsnrcgjchi0hgnb89a5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAvVhXFPPsKiNUo_U4vZB08710UUWCBHyg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "624486728323-23bt5nv1tpma3tsnrcgjchi0hgnb89a5.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "624486728323-6l72suaf9jbv5edl83nskh0hook1uqvg.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.wizardblink.alchemy"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
