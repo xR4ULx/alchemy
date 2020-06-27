@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "624486728323-or5b7ag91d046bjdsi1hnkubfdo49gmr.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.wizardblink.alchemy",
+            "certificate_hash": "8c97a0e403f3aac366bf01bb50f645b3e687f1d5"
+          }
+        },
+        {
           "client_id": "624486728323-m6oaaj948ute9kot0rlbaj4tbekeh4qg.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

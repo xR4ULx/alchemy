@@ -113,7 +113,7 @@ class _GameState extends State<Game> with TickerProviderStateMixin {
               padding: const EdgeInsets.all(7.0),
               margin: const EdgeInsets.all(7.0),
               decoration: new BoxDecoration(
-                  border: Border.all(color: Colors.black12, width: 8.0),
+                  border: Border.all(color: Colors.white, width: 8.0),
                   //new Color.fromRGBO(255, 0, 0, 0.0),
                   borderRadius: new BorderRadius.all(Radius.circular(20.0))),
               child: GridView.builder(
@@ -148,7 +148,7 @@ class _GameState extends State<Game> with TickerProviderStateMixin {
       child: GridTile(
         child: Container(
           decoration: BoxDecoration(
-              border: Border.all(color: Colors.black12, width: 0.5)),
+              border: Border.all(color: Colors.white, width: 0.5)),
           child: Center(
             child: _buildGridItem(x, y),
           ),

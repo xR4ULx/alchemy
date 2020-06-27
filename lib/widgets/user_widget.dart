@@ -16,8 +16,9 @@ Widget buildUser(BuildContext context, DocumentSnapshot document) {
       margin: EdgeInsets.all(2),
       padding: EdgeInsets.all(2),
       child: FlatButton(
+        shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(30.0)),  
         padding: EdgeInsets.all(5),
-        color: Theme.of(context).accentColor,
+        color: Colors.transparent,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -54,17 +55,21 @@ Widget buildUser(BuildContext context, DocumentSnapshot document) {
                       ),
               ],
             ),
-            SizedBox(
-              width: 10,
-            ),
-            Column(
+            Expanded(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Text(
                   document['displayName'],
                   style: TextStyle(color: Colors.black, fontSize: 18),
-                )
+                ),
+                Image(
+                    image: AssetImage("assets/boton-de-play.png"),
+                    width: 50,
+                  ),
               ],
-            )
+            ),),
+            
           ],
         ),
         onPressed: () {

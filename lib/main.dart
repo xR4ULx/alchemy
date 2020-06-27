@@ -49,8 +49,8 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'alchemy',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
+      darkTheme: ThemeData(
+        primarySwatch: Colors.teal,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       routes: {

@@ -56,7 +56,7 @@ class FirebaseService{
 
       // Update data to server if new user
       Firestore.instance.collection('users').document(_firebaseUser.uid).setData(user.toJson());
-      
+      return true;
 
     } else {
 
