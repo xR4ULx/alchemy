@@ -6,29 +6,25 @@ typedef OnConnected();
 typedef OnAssigned(String username);
 typedef OnDisconnected(String username);
 
-typedef OnResponse(dynamic data);
-typedef OnRequest(String him);
+typedef OnRequest(String player1);
+typedef OnResponse(bool response);
 
 class Signaling {
 
   IO.Socket _socket;
   OnConnected onConnected;
-  OnAssigned onAssigned;
-  OnDisconnected onDisconnected;
-
-  OnResponse onResponse;
   OnRequest onRequest;
+  OnResponse onResponse;
 
-
-  Future<void> init() async {
+  Signaling(){
     _connect();
   }
 
   _connect() {
-    String uri = 'https://backgame.herokuapp.com';
-    //String uriDev = 'http://192.168.1.41:5050';
+    //String uri = 'https://backgame.herokuapp.com';
+    String uriDev = 'http://192.168.1.41:5050';
 
-    _socket = IO.io(uri, <String, dynamic>{
+    _socket = IO.io(uriDev, <String, dynamic>{
       'transports': ['websocket'],
     });
 
@@ -36,12 +32,12 @@ class Signaling {
       onConnected();
     });
 
-    _socket.on('on-assigned', (username) {
-      onAssigned(username);
+    _socket.on('on-request', (player1) {
+      onRequest(player1);
     });
 
-    _socket.on('on-disconnected', (username) {
-      onDisconnected(username);
+    _socket.on('on-response', (response) {
+      onResponse(response);
     });
 
   }

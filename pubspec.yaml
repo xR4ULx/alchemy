@@ -43,7 +43,12 @@ dependencies:
   firebase_analytics: ^5.0.11
   firebase_storage: ^3.1.6
   cloud_firestore: ^0.13.7
-  shared_preferences: ^0.5.6+3
+  bloc: ^4.0.0
+  flutter_bloc: ^4.0.0
+  equatable:
+  meta:
+  rxdart:
+  flutter_auth_buttons:
 
 dev_dependencies:
   flutter_test:

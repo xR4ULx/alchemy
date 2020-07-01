@@ -1,65 +1,66 @@
 
-import 'package:alchemy/pages/login_page.dart';
-import 'package:alchemy/pages/root_page.dart';
-import 'package:alchemy/utils/fire_service.dart';
+
+import 'package:alchemy/src/bloc/authentication_bloc/authentication_bloc.dart';
+import 'package:alchemy/src/bloc/authentication_bloc/authentication_event.dart';
+import 'package:alchemy/src/bloc/authentication_bloc/authentication_state.dart';
+import 'package:alchemy/src/bloc/simple_bloc_delegate.dart';
+import 'package:alchemy/src/repository/user_model.dart';
+import 'package:alchemy/src/repository/user_repository.dart';
+import 'package:alchemy/src/ui/home_screen.dart';
+import 'package:alchemy/src/ui/login/login_screen.dart';
+import 'package:alchemy/src/ui/splash_screen.dart';
+import 'package:alchemy/src/util/signaling.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 
-GetIt locator = GetIt.instance;
+GetIt getIt = GetIt.instance;
 
 void setupSingletons() async {
-  locator.registerLazySingleton<FirebaseService>(() => FirebaseService());
+  getIt.registerLazySingleton<User>(() => User());
+  getIt.registerLazySingleton<Signaling>(() => Signaling());
 }
-
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  BlocSupervisor.delegate = SimpleBlocDelegate();
+
   setupSingletons();
-  runApp(MyApp());
+
+  final UserRepository userRepository = UserRepository();
+  runApp(
+    BlocProvider(
+      create: (context) => AuthenticationBloc(userRepository: userRepository)
+        ..add(AppStarted()),
+      child: App(userRepository: userRepository),
+    )
+  );
 }
 
-class MyApp extends StatefulWidget {
-  // This widget is the root of your application.
-  @override
-  _MyAppState createState() => _MyAppState();
-}
+class App extends StatelessWidget {
+  final UserRepository _userRepository;
 
-class _MyAppState extends State<MyApp> {
-
-  FirebaseService _fs;
-  Widget _defaultRoute = new LoginPage();
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsFlutterBinding.ensureInitialized();
-    _fs = GetIt.I.get<FirebaseService>();
-    _fs.initPreferences();
-    isSignedIn();
-  }
-
-  void isSignedIn() async {
-    final isLoggedIn = await _fs.isSignIn();
-    if (isLoggedIn) {
-      _defaultRoute = new RootPage();
-      _fs.handleSignIn();
-    }
-  }
+  App({Key key, @required UserRepository userRepository})
+    : assert (userRepository != null),
+      _userRepository = userRepository,
+      super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'alchemy',
-      darkTheme: ThemeData(
-        primarySwatch: Colors.teal,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
+      home: BlocBuilder<AuthenticationBloc, AuthenticationState>(
+        builder: (context, state) {
+          if (state is Uninitialized) {
+            return SplashScreen();
+          }
+          if (state is Authenticated) {
+            return HomeScreen(name: state.displayName, userRepository: _userRepository);
+          }
+          if (state is Unauthenticated) {
+            return LoginScreen(userRepository: _userRepository,);
+          }
+          return Container();
+        },
       ),
-      routes: {
-        '/signUp': (BuildContext context) => LoginPage(),
-        '/root': (BuildContext context) => RootPage(),
-      },
-      home: _defaultRoute,
     );
   }
 }
-
-

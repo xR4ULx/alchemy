@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:alchemy/models/potion_model.dart';
+import 'package:alchemy/src/repository/potion_model.dart';
 import 'package:animated_background/animated_background.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
