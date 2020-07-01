@@ -6,8 +6,8 @@ import 'package:alchemy/src/bloc/authentication_bloc/authentication_state.dart';
 import 'package:alchemy/src/bloc/simple_bloc_delegate.dart';
 import 'package:alchemy/src/repository/user_model.dart';
 import 'package:alchemy/src/repository/user_repository.dart';
-import 'package:alchemy/src/ui/home_screen.dart';
 import 'package:alchemy/src/ui/login/login_screen.dart';
+import 'package:alchemy/src/ui/root_page.dart';
 import 'package:alchemy/src/ui/splash_screen.dart';
 import 'package:alchemy/src/util/signaling.dart';
 import 'package:flutter/material.dart';
@@ -53,7 +53,7 @@ class App extends StatelessWidget {
             return SplashScreen();
           }
           if (state is Authenticated) {
-            return HomeScreen(name: state.displayName, userRepository: _userRepository);
+            return RootPage(name: state.displayName, userRepository: _userRepository);
           }
           if (state is Unauthenticated) {
             return LoginScreen(userRepository: _userRepository,);

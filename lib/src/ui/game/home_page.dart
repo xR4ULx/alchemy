@@ -1,4 +1,6 @@
-import 'package:alchemy/src/ui/game_page.dart';
+import 'package:alchemy/src/bloc/game_bloc/bloc.dart';
+import 'package:alchemy/src/bloc/game_bloc/game_bloc.dart';
+import 'package:alchemy/src/ui/game/game_page.dart';
 import 'package:alchemy/src/bloc/authentication_bloc/bloc.dart';
 import 'package:alchemy/src/repository/user_model.dart';
 import 'package:alchemy/src/repository/user_repository.dart';
@@ -9,20 +11,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomePage extends StatefulWidget {
   final String name;
   final UserRepository _userRepository;
 
-  HomeScreen({Key key, @required this.name,@required UserRepository userRepository}) 
+  HomePage({Key key, @required this.name,@required UserRepository userRepository}) 
   : assert(userRepository != null),
     _userRepository = userRepository,
     super(key: key);
 
   @override
-  _HomeScreenState createState() => _HomeScreenState();
+  _HomePageState createState() => _HomePageState();
 }
 
-class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin{
+class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
 
   User _user = GetIt.I.get<User>();
   Signaling _signaling = GetIt.I.get<Signaling>();
@@ -32,13 +34,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin{
     // TODO: implement initState
     super.initState();
     widget._userRepository.getAllUsers();
-
     _signaling.emit('login', _user.displayName);
-
-    _signaling.onRequest = (String gameid) {
-      print(gameid);
-      _signaling.emit('response',{"gameid": gameid, "accept": true});
-    };
   }
   @override
   Widget build(BuildContext context) {
@@ -159,12 +155,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin{
                                     ],
                                   ),
                                   onPressed: () {
+                                    BlocProvider.of<GameBloc>(context).add(EWait());
                                     if(snapshot.data.documents[index]['isActive']){
-                                      //_signaling.emit('request',snapshot.data.documents[index]['displayName']);
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => Game()));
+                                      _signaling.emit('request',snapshot.data.documents[index]['displayName']);
+                                    //Navigator.push(
+                                    //    context,
+                                    //    MaterialPageRoute(
+                                    //        builder: (context) => Game()));
                                     }
                                   },
                                 ),
