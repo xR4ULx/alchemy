@@ -10,32 +10,36 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class HomePage extends StatefulWidget {
   final String name;
   final UserRepository _userRepository;
 
-  HomePage({Key key, @required this.name,@required UserRepository userRepository}) 
-  : assert(userRepository != null),
-    _userRepository = userRepository,
-    super(key: key);
+  HomePage(
+      {Key key, @required this.name, @required UserRepository userRepository})
+      : assert(userRepository != null),
+        _userRepository = userRepository,
+        super(key: key);
 
   @override
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
-
+class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   User _user = GetIt.I.get<User>();
   Signaling _signaling = GetIt.I.get<Signaling>();
-  
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     widget._userRepository.getAllUsers();
+    _user.player = '';
+    _user.adversary = '';
     _signaling.emit('login', _user.displayName);
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,130 +55,153 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin{
         ],
       ),
       body: Stack(
-          children: <Widget>[
-            // List
-            AnimatedBackground(
-              behaviour: RandomParticleBehaviour(),
-              vsync: this,
-              child: Container(
-                child: StreamBuilder(
-                  stream: widget._userRepository.usersStream,
-                  //Firestore.instance.collection('users').snapshots(),
-                  builder: (context, snapshot) {
-                    if (!snapshot.hasData) {
-                      return Center(
-                        child: CircularProgressIndicator(
-                          valueColor:
-                              AlwaysStoppedAnimation<Color>(Colors.purple),
-                        ),
-                      );
-                    } else {
-                      return ListView.builder(
-                        padding: EdgeInsets.all(10.0),
-                        itemBuilder: (context, index) => 
-                        (snapshot.data.documents[index]['uid'] == _user.uid)
-                            ? Container()
-                            : Container(
-                                margin: EdgeInsets.all(2),
-                                padding: EdgeInsets.all(2),
-                                child: FlatButton(
-                                  shape: new RoundedRectangleBorder(
-                                      borderRadius:
-                                          new BorderRadius.circular(30.0)),
-                                  padding: EdgeInsets.all(5),
-                                  color: Colors.transparent,
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: <Widget>[
-                                      Stack(
-                                        alignment: Alignment.bottomLeft,
-                                        children: <Widget>[
-                                          CupertinoButton(
-                                            onPressed: () {},
-                                            padding: EdgeInsets.all(10),
-                                            child: ClipRRect(
-                                              borderRadius:
-                                                  BorderRadius.circular(25),
-                                              child: Image.network(
-                                                snapshot.data.documents[index]
-                                                    ['photoUrl'],
-                                                width: 40,
-                                              ),
+        children: <Widget>[
+          // List
+          AnimatedBackground(
+            behaviour: RandomParticleBehaviour(),
+            vsync: this,
+            child: Container(
+              child: StreamBuilder(
+                stream: widget._userRepository.usersStream,
+                //Firestore.instance.collection('users').snapshots(),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {
+                    return Center(
+                      child: CircularProgressIndicator(
+                        valueColor:
+                            AlwaysStoppedAnimation<Color>(Colors.purple),
+                      ),
+                    );
+                  } else {
+                    return ListView.builder(
+                      padding: EdgeInsets.all(10.0),
+                      itemBuilder: (context, index) => (snapshot
+                                  .data.documents[index]['uid'] ==
+                              _user.uid)
+                          ? Container()
+                          : Container(
+                              margin: EdgeInsets.all(2),
+                              padding: EdgeInsets.all(2),
+                              child: FlatButton(
+                                shape: new RoundedRectangleBorder(
+                                    borderRadius:
+                                        new BorderRadius.circular(30.0)),
+                                padding: EdgeInsets.all(5),
+                                color: Colors.transparent,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: <Widget>[
+                                    Stack(
+                                      alignment: Alignment.bottomLeft,
+                                      children: <Widget>[
+                                        CupertinoButton(
+                                          onPressed: () {},
+                                          padding: EdgeInsets.all(10),
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(25),
+                                            child: Image.network(
+                                              snapshot.data.documents[index]
+                                                  ['photoUrl'],
+                                              width: 40,
                                             ),
+                                          ),
+                                        ),
+                                        snapshot.data.documents[index]
+                                                ['isActive']
+                                            ? Container(
+                                                decoration: BoxDecoration(
+                                                    color: Colors.white,
+                                                    shape: BoxShape.circle),
+                                                padding: EdgeInsets.all(3),
+                                                child: Container(
+                                                  decoration: BoxDecoration(
+                                                      color: Colors.greenAccent,
+                                                      shape: BoxShape.circle),
+                                                  width: 25 / 2,
+                                                  height: 25 / 2,
+                                                ),
+                                              )
+                                            : Container(
+                                                width: 0.0,
+                                                height: 0.0,
+                                              ),
+                                      ],
+                                    ),
+                                    Expanded(
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: <Widget>[
+                                          Text(
+                                            snapshot.data.documents[index]
+                                                ['displayName'],
+                                            style: TextStyle(
+                                                color: Colors.black,
+                                                fontSize: 18),
                                           ),
                                           snapshot.data.documents[index]
                                                   ['isActive']
-                                              ? Container(
-                                                  decoration: BoxDecoration(
-                                                      color: Colors.white,
-                                                      shape: BoxShape.circle),
-                                                  padding: EdgeInsets.all(3),
-                                                  child: Container(
-                                                    decoration: BoxDecoration(
-                                                        color:
-                                                            Colors.greenAccent,
-                                                        shape: BoxShape.circle),
-                                                    width: 25 / 2,
-                                                    height: 25 / 2,
-                                                  ),
-                                                )
+                                              ? snapshot.data.documents[index]
+                                                          ['player'] ==
+                                                      ''
+                                                  ? Image(
+                                                      image: AssetImage(
+                                                          "assets/magia-2.png"),
+                                                      width: 50,
+                                                    )
+                                                  : Column(
+                                                      children: <Widget>[
+                                                        Image(
+                                                          image: AssetImage(
+                                                              "assets/magia.png"),
+                                                          width: 50,
+                                                        ),
+                                                        Text(
+                                                          'Ocupado',
+                                                          style: GoogleFonts
+                                                              .griffy(),
+                                                          textScaleFactor: 1,
+                                                        )
+                                                      ],
+                                                    )
                                               : Container(
                                                   width: 0.0,
                                                   height: 0.0,
                                                 ),
                                         ],
                                       ),
-                                      Expanded(
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: <Widget>[
-                                            Text(
-                                              snapshot.data.documents[index]
-                                                  ['displayName'],
-                                              style: TextStyle(
-                                                  color: Colors.black,
-                                                  fontSize: 18),
-                                            ),
-                                            snapshot.data.documents[index]['isActive']
-                                            ?
-                                            Image(
-                                              image: AssetImage(
-                                                  "assets/boton-de-play.png"),
-                                              width: 50,
-                                            )
-                                            : Container(
-                                                  width: 0.0,
-                                                  height: 0.0,
-                                                ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  onPressed: () {
-                                    BlocProvider.of<GameBloc>(context).add(EWait());
-                                    if(snapshot.data.documents[index]['isActive']){
-                                      _signaling.emit('request',snapshot.data.documents[index]['displayName']);
-                                    //Navigator.push(
-                                    //    context,
-                                    //    MaterialPageRoute(
-                                    //        builder: (context) => Game()));
-                                    }
-                                  },
+                                    ),
+                                  ],
                                 ),
+                                onPressed: () {
+                                  if (snapshot.data.documents[index]
+                                          ['isActive'] &&
+                                      snapshot.data.documents[index]
+                                              ['player'] ==
+                                          '') {
+                                    _user.adversary = snapshot
+                                        .data.documents[index]['displayName'];
+                                    _signaling.emit(
+                                        'request',
+                                        snapshot.data.documents[index]
+                                            ['displayName']);
+                                    BlocProvider.of<GameBloc>(context)
+                                        .add(EWait());
+                                  }
+                                },
                               ),
-                        itemCount: snapshot.data.documents.length,
-                      );
-                    }
-                  },
-                ),
+                            ),
+                      itemCount: snapshot.data.documents.length,
+                    );
+                  }
+                },
               ),
             ),
-          ],
-        ),
+          ),
+        ],
+      ),
     );
   }
 }

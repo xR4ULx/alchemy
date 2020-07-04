@@ -1,9 +1,14 @@
 import 'dart:async';
 
+import 'package:alchemy/src/bloc/game_bloc/bloc.dart';
 import 'package:alchemy/src/repository/potion_model.dart';
+import 'package:alchemy/src/repository/user_model.dart';
+import 'package:alchemy/src/util/signaling.dart';
 import 'package:animated_background/animated_background.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 final potions = new Potions();
@@ -17,32 +22,12 @@ class Game extends StatefulWidget {
 }
 
 class _GameState extends State<Game> with TickerProviderStateMixin {
+  Signaling _signaling = GetIt.I.get<Signaling>();
+  User _user = GetIt.I.get<User>();
+
   String player;
   int p1win;
   int p2win;
-  Timer _timer;
-  int _start;
-
-  void startTimer() {
-    _start = 10;
-    const oneSec = const Duration(seconds: 1);
-    _timer = new Timer.periodic(
-      oneSec,
-      (Timer timer) => setState(
-        () {
-          if (_start < 1) {
-            timer.cancel();
-            player == 'p1' ? player = 'p2' : player = 'p1';
-            setState(() {
-              _start = 10;
-            });
-          } else {
-            _start = _start - 1;
-          }
-        },
-      ),
-    );
-  }
 
   @override
   void initState() {
@@ -50,19 +35,36 @@ class _GameState extends State<Game> with TickerProviderStateMixin {
     p1win = 0;
     p2win = 0;
     gridState = potions.getPotions();
+
+    _signaling.onChangeTurn = (data) {
+      setState(() {
+        _paintAdversary(data["x"], data["y"]);
+        player = data["player"];
+      });
+    };
+
     super.initState();
-    startTimer();
+
+    //startTimer();
   }
 
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () => Navigator.of(context).popAndPushNamed('/root'),
-          child: Scaffold(
+      child: Scaffold(
         body: AnimatedBackground(
             behaviour: RandomParticleBehaviour(),
             vsync: this,
             child: _buildGameBody()),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            _signaling.finishGame();
+            BlocProvider.of<GameBloc>(context).add(EHome());
+          },
+          backgroundColor: Colors.redAccent,
+          child: Icon(Icons.cancel),
+        ),
       ),
     );
   }
@@ -86,7 +88,7 @@ class _GameState extends State<Game> with TickerProviderStateMixin {
                     width: 50,
                   ),
                   Text(
-                    ' WINS: ${p1win}',
+                    _user.player == 'p1' ? _user.displayName : _user.adversary,
                     style: GoogleFonts.griffy(color: Colors.deepPurple),
                     textScaleFactor: 2,
                   ),
@@ -99,7 +101,7 @@ class _GameState extends State<Game> with TickerProviderStateMixin {
                     width: 50,
                   ),
                   Text(
-                    ' WINS: ${p2win}',
+                    _user.player == 'p2' ? _user.displayName : _user.adversary,
                     style: GoogleFonts.griffy(color: Colors.redAccent),
                     textScaleFactor: 2,
                   ),
@@ -126,13 +128,8 @@ class _GameState extends State<Game> with TickerProviderStateMixin {
             ),
           ),
           Text(
-            'TURNO DE: ${player}',
+            _user.player == player ? _user.displayName : _user.adversary,
             style: GoogleFonts.griffy(),
-            textScaleFactor: 2,
-          ),
-          Text(
-            '${_start}',
-            style: GoogleFonts.griffy(color: Colors.redAccent),
             textScaleFactor: 2,
           ),
         ]);
@@ -162,25 +159,17 @@ class _GameState extends State<Game> with TickerProviderStateMixin {
     return potion.getPosition();
   }
 
-  _gridItemTapped(int x, int y) {
-    _timer.cancel();
-    print('X:[${x}] Y:[${y}');
-
-    Potion potion = gridState[x][y];
+  _paintAdversary(int x, int y) {
     String win;
-    String antPlayer;
+    Potion potion = gridState[x][y];
 
     setState(() {
-      antPlayer = player;
       if (potion.setPosition(player)) {
         potion.getPosition();
-        player == 'p1' ? player = 'p2' : player = 'p1';
       }
     });
 
-    if (antPlayer != null) {
-      win = potions.comprobarWin(antPlayer);
-    }
+    win = potions.comprobarWin(player);
 
     if (win != null) {
       AwesomeDialog(
@@ -188,8 +177,8 @@ class _GameState extends State<Game> with TickerProviderStateMixin {
           headerAnimationLoop: false,
           dialogType: DialogType.SUCCES,
           animType: AnimType.SCALE,
-          title: 'GANADOR ${win}',
-          desc: '${win}',
+          title: 'GANADOR',
+          desc: _user.player == win ? _user.displayName : _user.adversary,
           //btnCancelOnPress: () {},
           btnOkOnPress: () {
             setState(() {
@@ -197,11 +186,69 @@ class _GameState extends State<Game> with TickerProviderStateMixin {
               potions.clearPotions();
               gridState.clear();
               gridState = potions.getPotions();
+              //Finalizamos el Juego
+              _user.incrementWins();
+              _signaling.finishGame();
+              BlocProvider.of<GameBloc>(context).add(EHome());
             });
           })
         ..show();
     }
 
-    startTimer();
+    if (potions.fullPotions()) {
+      _signaling.finishGame();
+      BlocProvider.of<GameBloc>(context).add(EHome());
+    }
+  }
+
+  _gridItemTapped(int x, int y) {
+    //_timer.cancel();
+    if (player == _user.player) {
+      Potion potion = gridState[x][y];
+      String win;
+      String antPlayer;
+
+      setState(() {
+        antPlayer = player;
+        if (potion.setPosition(player)) {
+          potion.getPosition();
+          player == 'p1' ? player = 'p2' : player = 'p1';
+        }
+      });
+
+      if (antPlayer != null) {
+        win = potions.comprobarWin(antPlayer);
+      }
+
+      if (win != null) {
+        AwesomeDialog(
+            context: context,
+            headerAnimationLoop: false,
+            dialogType: DialogType.SUCCES,
+            animType: AnimType.SCALE,
+            title: 'GANADOR',
+            desc: _user.player == win ? _user.displayName : _user.adversary,
+            //btnCancelOnPress: () {},
+            btnOkOnPress: () {
+              setState(() {
+                win == 'p1' ? p1win++ : p2win++;
+                potions.clearPotions();
+                gridState.clear();
+                gridState = potions.getPotions();
+                //Finalizamos el Juego
+                _signaling.finishGame();
+                BlocProvider.of<GameBloc>(context).add(EHome());
+              });
+            })
+          ..show();
+      }
+
+      _signaling.emit('changeTurn', {"player": player, "x": x, "y": y});
+
+      if (potions.fullPotions()) {
+        _signaling.finishGame();
+        BlocProvider.of<GameBloc>(context).add(EHome());
+      }
+    }
   }
 }

@@ -45,10 +45,13 @@ dependencies:
   cloud_firestore: ^0.13.7
   bloc: ^4.0.0
   flutter_bloc: ^4.0.0
+  flutter_incall_manager:
+    git: https://github.com/GioviQ/flutter-incall-manager.git
   equatable:
   meta:
   rxdart:
   flutter_auth_buttons:
+  
 
 dev_dependencies:
   flutter_test:

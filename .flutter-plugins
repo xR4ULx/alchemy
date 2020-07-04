@@ -9,6 +9,7 @@ firebase_core=/Users/raulmacias/flutter/.pub-cache/hosted/pub.dartlang.org/fireb
 firebase_core_web=/Users/raulmacias/flutter/.pub-cache/hosted/pub.dartlang.org/firebase_core_web-0.1.1+2/
 firebase_database=/Users/raulmacias/flutter/.pub-cache/hosted/pub.dartlang.org/firebase_database-3.1.6/
 firebase_storage=/Users/raulmacias/flutter/.pub-cache/hosted/pub.dartlang.org/firebase_storage-3.1.6/
+flutter_incall_manager=/Users/raulmacias/flutter/.pub-cache/git/flutter-incall-manager-9b9bc66528e681663b685cefdcd13b23d78f39dc/
 google_sign_in=/Users/raulmacias/flutter/.pub-cache/hosted/pub.dartlang.org/google_sign_in-4.5.1/
 google_sign_in_web=/Users/raulmacias/flutter/.pub-cache/hosted/pub.dartlang.org/google_sign_in_web-0.9.1+1/
 path_provider=/Users/raulmacias/flutter/.pub-cache/hosted/pub.dartlang.org/path_provider-1.6.11/

@@ -1,5 +1,3 @@
-
-
 import 'package:alchemy/src/bloc/authentication_bloc/authentication_bloc.dart';
 import 'package:alchemy/src/bloc/authentication_bloc/authentication_event.dart';
 import 'package:alchemy/src/bloc/authentication_bloc/authentication_state.dart';
@@ -20,6 +18,7 @@ void setupSingletons() async {
   getIt.registerLazySingleton<User>(() => User());
   getIt.registerLazySingleton<Signaling>(() => Signaling());
 }
+
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   BlocSupervisor.delegate = SimpleBlocDelegate();
@@ -27,22 +26,20 @@ void main() {
   setupSingletons();
 
   final UserRepository userRepository = UserRepository();
-  runApp(
-    BlocProvider(
-      create: (context) => AuthenticationBloc(userRepository: userRepository)
-        ..add(AppStarted()),
-      child: App(userRepository: userRepository),
-    )
-  );
+  runApp(BlocProvider(
+    create: (context) =>
+        AuthenticationBloc(userRepository: userRepository)..add(AppStarted()),
+    child: App(userRepository: userRepository),
+  ));
 }
 
 class App extends StatelessWidget {
   final UserRepository _userRepository;
 
   App({Key key, @required UserRepository userRepository})
-    : assert (userRepository != null),
-      _userRepository = userRepository,
-      super(key: key);
+      : assert(userRepository != null),
+        _userRepository = userRepository,
+        super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -53,10 +50,13 @@ class App extends StatelessWidget {
             return SplashScreen();
           }
           if (state is Authenticated) {
-            return RootPage(name: state.displayName, userRepository: _userRepository);
+            return RootPage(
+                name: state.displayName, userRepository: _userRepository);
           }
           if (state is Unauthenticated) {
-            return LoginScreen(userRepository: _userRepository,);
+            return LoginScreen(
+              userRepository: _userRepository,
+            );
           }
           return Container();
         },

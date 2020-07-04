@@ -5,12 +5,13 @@ import 'package:alchemy/src/repository/user_repository.dart';
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 
-class AuthenticationBloc extends Bloc<AuthenticationEvent, AuthenticationState> {
+class AuthenticationBloc
+    extends Bloc<AuthenticationEvent, AuthenticationState> {
   final UserRepository _userRepository;
 
   AuthenticationBloc({@required UserRepository userRepository})
-    : assert(userRepository != null),
-    _userRepository = userRepository;
+      : assert(userRepository != null),
+        _userRepository = userRepository;
 
   @override
   AuthenticationState get initialState => Uninitialized();
@@ -35,12 +36,11 @@ class AuthenticationBloc extends Bloc<AuthenticationEvent, AuthenticationState> 
       final isSignedIn = await _userRepository.isSignedIn();
       if (isSignedIn) {
         final user = await _userRepository.getUser();
-        yield await Future.delayed(Duration(seconds: 5), (){
+        yield await Future.delayed(Duration(seconds: 5), () {
           return Authenticated(user);
         });
-      }
-      else {
-        yield await Future.delayed(Duration(seconds: 5), (){
+      } else {
+        yield await Future.delayed(Duration(seconds: 5), () {
           return Unauthenticated();
         });
       }

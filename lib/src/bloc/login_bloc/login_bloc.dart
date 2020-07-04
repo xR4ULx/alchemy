@@ -16,6 +16,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   @override
   LoginState get initialState => LoginState.empty();
 
+  /*
   @override
   Stream<Transition<LoginEvent, LoginState>> transformEvents(
     Stream<LoginEvent> events,
@@ -32,23 +33,24 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       transitionFn,
     );
   }
+  */
 
   @override
   Stream<LoginState> mapEventToState(
     LoginEvent event,
   ) async* {
-    if(event is LoginWithGooglePressed){
+    if (event is LoginWithGooglePressed) {
       yield* _mapLoginWithGooglePressedToState();
     }
   }
 
-  Stream<LoginState> _mapLoginWithGooglePressedToState() async*{
+  Stream<LoginState> _mapLoginWithGooglePressedToState() async* {
     try {
-      await _userRepository.activeUser(await _userRepository.signInWithGoogle());
+      await _userRepository
+          .activeUser(await _userRepository.signInWithGoogle());
       yield LoginState.success();
     } catch (_) {
       yield LoginState.failure();
     }
   }
-
 }

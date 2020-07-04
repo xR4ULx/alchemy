@@ -1,41 +1,47 @@
 import 'dart:async';
 
 import 'package:alchemy/src/bloc/game_bloc/bloc.dart';
+import 'package:alchemy/src/repository/user_model.dart';
 import 'package:alchemy/src/util/signaling.dart';
 import 'package:bloc/bloc.dart';
 import 'package:get_it/get_it.dart';
 
-
 class GameBloc extends Bloc<GameEvent, GameState> {
-
   @override
   GameState get initialState => SHome();
 
   Signaling _signaling = GetIt.I.get<Signaling>();
-  
+  User _user = GetIt.I.get<User>();
+
   GameBloc() {
     _init();
   }
 
   _init() async {
-
-    _signaling.onRequest = (gameid) {
+    _signaling.onRequest = (adversary) {
+      _user.adversary = adversary;
       add(ERequest());
     };
 
-    _signaling.onResponse = (response){
-      if(response){
+    _signaling.onResponse = (response) {
+      if (response) {
+        _user.player = 'p1';
         add(EGame());
+      } else {
+        add(EHome());
       }
     };
 
+    _signaling.onFinish = () {
+      add(EHome());
+    };
   }
 
   @override
   Stream<GameState> mapEventToState(
     GameEvent event,
   ) async* {
-        if (event is EHome) {
+    if (event is EHome) {
       yield* _mapHomeToState();
     }
     if (event is EWait) {
@@ -48,8 +54,6 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       yield* _mapGameToState();
     }
   }
-
-
 
   Stream<GameState> _mapHomeToState() async* {
     yield SHome();
@@ -66,5 +70,4 @@ class GameBloc extends Bloc<GameEvent, GameState> {
   Stream<GameState> _mapGameToState() async* {
     yield SGame();
   }
-
 }

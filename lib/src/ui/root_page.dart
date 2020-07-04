@@ -21,23 +21,23 @@ class RootPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         body: BlocProvider<GameBloc>(
-          create: (context) => GameBloc(),
-          child: BlocBuilder<GameBloc, GameState>(
-            builder: (context, state) {
-              if (state is SHome) {
-                return HomePage(name: name, userRepository: _userRepository);
-              }
-              if (state is SWait) {
-                return WaitPage();
-              }
-              if (state is SRequest) {
-                return RequestPage();
-              }
-              if (state is SGame) {
-                return Game();
-              }
-            },
-          ),
-        ));
+      create: (context) => GameBloc(),
+      child: BlocBuilder<GameBloc, GameState>(
+        builder: (context, state) {
+          if (state is SHome) {
+            return HomePage(name: name, userRepository: _userRepository);
+          }
+          if (state is SWait) {
+            return WaitPage();
+          }
+          if (state is SRequest) {
+            return RequestPage();
+          }
+          if (state is SGame) {
+            return Game();
+          }
+        },
+      ),
+    ));
   }
 }

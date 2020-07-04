@@ -28,6 +28,17 @@ class Potions {
     }
   }
 
+  bool fullPotions() {
+    for (var c = 0; c < _cols; c++) {
+      for (var r = 0; r < _rows; r++) {
+        if (_potions[c][r]._player == '') {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
   getPotions() {
     return _potions;
   }

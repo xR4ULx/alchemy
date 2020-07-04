@@ -18,33 +18,32 @@ class UserRepository {
   Function(QuerySnapshot) get _usersSink => _usersStreamController.sink.add;
   Stream<QuerySnapshot> get usersStream => _usersStreamController.stream;
 
-    void disposeStream(){
+  void disposeStream() {
     _usersStreamController?.close();
   }
 
-  void getAllUsers() async{
-    
-    await for(QuerySnapshot snap in Firestore.instance.collection('users').orderBy('isActive', descending: true).snapshots()){
+  void getAllUsers() async {
+    await for (QuerySnapshot snap in Firestore.instance
+        .collection('users')
+        .orderBy('isActive', descending: true)
+        .snapshots()) {
       _usersSink(snap);
     }
   }
 
   // Constructor
   UserRepository({FirebaseAuth firebaseAuth, GoogleSignIn googleSignIn})
-    : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance,
-    _googleSignIn = googleSignIn ?? GoogleSignIn();
-  
+      : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance,
+        _googleSignIn = googleSignIn ?? GoogleSignIn();
+
   // SignInWithGoogle
   Future<FirebaseUser> signInWithGoogle() async {
     final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
-    final GoogleSignInAuthentication googleAuth = 
-      await googleUser.authentication;
-    final AuthCredential credential =
-      GoogleAuthProvider.getCredential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken
-      );
-    
+    final GoogleSignInAuthentication googleAuth =
+        await googleUser.authentication;
+    final AuthCredential credential = GoogleAuthProvider.getCredential(
+        accessToken: googleAuth.accessToken, idToken: googleAuth.idToken);
+
     await _firebaseAuth.signInWithCredential(credential);
     return _firebaseAuth.currentUser();
   }
@@ -52,10 +51,7 @@ class UserRepository {
   // SignOut
   Future<void> signOut() async {
     await desactiveUser();
-    return Future.wait([
-      _firebaseAuth.signOut(),
-      _googleSignIn.signOut()
-    ]);
+    return Future.wait([_firebaseAuth.signOut(), _googleSignIn.signOut()]);
   }
 
   // Esta logueado?
@@ -65,27 +61,28 @@ class UserRepository {
     return currentUser != null;
   }
 
-  Future<void> activeUser(FirebaseUser user) async{
-
+  Future<void> activeUser(FirebaseUser user) async {
     _user.displayName = user.displayName;
     _user.photoUrl = user.photoUrl;
     _user.uid = user.uid;
     _user.isActive = true;
 
-      // Update data to server if new user
-    Firestore.instance.collection('users').document(user.uid).setData(_user.toJson());
+    // Update data to server if new user
+    Firestore.instance
+        .collection('users')
+        .document(user.uid)
+        .setData(_user.toJson());
   }
 
-  Future<void> desactiveUser() async{
-
+  Future<void> desactiveUser() async {
     _user.isActive = false;
 
-      // Update data to server if new user
-    Firestore.instance.collection('users').document(_user.uid).setData(_user.toJson());
+    // Update data to server if new user
+    Firestore.instance
+        .collection('users')
+        .document(_user.uid)
+        .setData(_user.toJson());
   }
-  
-
-
 
   // Obtener usuario
   Future<String> getUser() async {

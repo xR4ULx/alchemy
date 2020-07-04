@@ -1,6 +1,9 @@
-
-
 import 'dart:convert';
+
+import 'package:alchemy/src/repository/user_repository.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+UserRepository _userRepository = UserRepository();
 
 User userFireFromJson(String str) => User.fromJson(json.decode(str));
 String userFireToJson(User data) => json.encode(data.toJson());
@@ -20,12 +23,14 @@ class Users {
   }
 }
 
-class User{
-
+class User {
   String _displayName;
   String _photoUrl;
   String _uid;
+  String _player;
+  String _adversary;
   bool _isActive;
+  int _wins;
 
   User();
 
@@ -53,6 +58,22 @@ class User{
     _uid = uid;
   }
 
+  String get player {
+    return _player;
+  }
+
+  void set player(String player) {
+    _player = player;
+  }
+
+  String get adversary {
+    return _adversary;
+  }
+
+  void set adversary(String adversary) {
+    _adversary = adversary;
+  }
+
   bool get isActive {
     return _isActive;
   }
@@ -61,20 +82,36 @@ class User{
     _isActive = isActive;
   }
 
+  int get wins {
+    return _wins;
+  }
 
+  void set wins(int wins) {
+    _wins = wins;
+  }
 
-  User.fromJson(Map<String, dynamic> json){
+  incrementWins() {
+    _wins = _wins + 1;
+    Firestore.instance.collection('users').document(_uid).setData(toJson());
+  }
+
+  User.fromJson(Map<String, dynamic> json) {
     _displayName = json["displayName"];
     _photoUrl = json["photoUrl"];
-    _uid= json["uid"];
+    _uid = json["uid"];
+    _player = json["player"];
+    _adversary = json["adversary"];
     _isActive = json["isActive"];
+    _wins = json["wins"];
   }
 
   Map<String, dynamic> toJson() => {
-    "displayName": _displayName,
-    "photoUrl": _photoUrl,
-    "uid": _uid,
-    "isActive": _isActive,
-  };
-
+        "displayName": _displayName,
+        "photoUrl": _photoUrl,
+        "uid": _uid,
+        "player": _player,
+        "adversary": _adversary,
+        "isActive": _isActive,
+        "wins": _wins,
+      };
 }
