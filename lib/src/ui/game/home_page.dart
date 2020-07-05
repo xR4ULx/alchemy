@@ -44,7 +44,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('4lchemy'),
+        backgroundColor: Colors.transparent,
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.exit_to_app),

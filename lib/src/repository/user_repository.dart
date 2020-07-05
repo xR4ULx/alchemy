@@ -9,6 +9,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 class UserRepository {
   final FirebaseAuth _firebaseAuth;
   final GoogleSignIn _googleSignIn;
+  //FirebaseUser _firebaseUser;
   User _user = GetIt.I.get<User>();
 
   //PROVIDER
@@ -44,44 +45,64 @@ class UserRepository {
     final AuthCredential credential = GoogleAuthProvider.getCredential(
         accessToken: googleAuth.accessToken, idToken: googleAuth.idToken);
 
-    await _firebaseAuth.signInWithCredential(credential);
-    return _firebaseAuth.currentUser();
+    setActive(true);
+    return (await _firebaseAuth.signInWithCredential(credential)).user;
   }
 
   // SignOut
   Future<void> signOut() async {
-    await desactiveUser();
+    setActive(false);
     return Future.wait([_firebaseAuth.signOut(), _googleSignIn.signOut()]);
   }
 
   // Esta logueado?
   Future<bool> isSignedIn() async {
     final currentUser = await _firebaseAuth.currentUser();
-    activeUser(currentUser);
+    setActive(true);
     return currentUser != null;
   }
 
-  Future<void> activeUser(FirebaseUser user) async {
-    _user.displayName = user.displayName;
-    _user.photoUrl = user.photoUrl;
-    _user.uid = user.uid;
-    _user.isActive = true;
+  Future<void> setActive(bool active) async {
+    if (active) {
+      FirebaseUser _firebaseUser = await _firebaseAuth.currentUser();
 
-    // Update data to server if new user
-    Firestore.instance
-        .collection('users')
-        .document(user.uid)
-        .setData(_user.toJson());
-  }
+      if (_firebaseUser != null) {
+        final QuerySnapshot result = await Firestore.instance
+            .collection('users')
+            .where('uid', isEqualTo: _firebaseUser.uid)
+            .getDocuments();
+        final List<DocumentSnapshot> documents = result.documents;
 
-  Future<void> desactiveUser() async {
-    _user.isActive = false;
+        if (documents.length == 0) {
+          _user.displayName = _firebaseUser.displayName;
+          _user.photoUrl = _firebaseUser.photoUrl;
+          _user.uid = _firebaseUser.uid;
+          _user.player = '';
+          _user.adversary = '';
+          _user.wins = 0;
+          _user.isActive = true;
 
-    // Update data to server if new user
-    Firestore.instance
-        .collection('users')
-        .document(_user.uid)
-        .setData(_user.toJson());
+          // Update data to server if new user
+          Firestore.instance
+              .collection('users')
+              .document(_firebaseUser.uid)
+              .setData(_user.toJson());
+        } else {
+          _user.displayName = documents[0]['displayName'];
+          _user.photoUrl = documents[0]['photoUrl'];
+          _user.uid = documents[0]['uid'];
+          _user.player = documents[0]['player'];
+          _user.adversary = documents[0]['adversary'];
+          _user.wins = documents[0]['wins'];
+          _user.isActive = documents[0]['isActive'];
+        }
+      }
+    } else {
+      Firestore.instance
+          .collection('users')
+          .document(_user.uid)
+          .updateData({'isActive': active});
+    }
   }
 
   // Obtener usuario
