@@ -26,14 +26,10 @@ class _GameState extends State<Game> with TickerProviderStateMixin {
   User _user = GetIt.I.get<User>();
 
   String player;
-  int p1win;
-  int p2win;
 
   @override
   void initState() {
     player = 'p1';
-    p1win = 0;
-    p2win = 0;
     gridState = potions.getPotions();
 
     _signaling.onChangeTurn = (data) {
@@ -44,8 +40,6 @@ class _GameState extends State<Game> with TickerProviderStateMixin {
     };
 
     super.initState();
-
-    //startTimer();
   }
 
   @override
@@ -159,6 +153,34 @@ class _GameState extends State<Game> with TickerProviderStateMixin {
     return potion.getPosition();
   }
 
+  _showWin(String win) {
+    _user.player = '';
+    _user.adversary = '';
+
+    if (win == _user.player) {
+      _user.incrementWins();
+    }
+    AwesomeDialog(
+        context: context,
+        headerAnimationLoop: false,
+        dialogType: DialogType.SUCCES,
+        animType: AnimType.SCALE,
+        title: 'GANADOR',
+        desc: _user.player == win ? _user.displayName : _user.adversary,
+        //btnCancelOnPress: () {},
+        btnOkOnPress: () {
+          setState(() {
+            potions.clearPotions();
+            gridState.clear();
+            gridState = potions.getPotions();
+            //Finalizamos el Juego
+            _signaling.finishGame();
+            BlocProvider.of<GameBloc>(context).add(EHome());
+          });
+        })
+      ..show();
+  }
+
   _paintAdversary(int x, int y) {
     String win;
     Potion potion = gridState[x][y];
@@ -172,30 +194,12 @@ class _GameState extends State<Game> with TickerProviderStateMixin {
     win = potions.comprobarWin(player);
 
     if (win != null) {
-      AwesomeDialog(
-          context: context,
-          headerAnimationLoop: false,
-          dialogType: DialogType.SUCCES,
-          animType: AnimType.SCALE,
-          title: 'GANADOR',
-          desc: _user.player == win ? _user.displayName : _user.adversary,
-          //btnCancelOnPress: () {},
-          btnOkOnPress: () {
-            setState(() {
-              win == 'p1' ? p1win++ : p2win++;
-              potions.clearPotions();
-              gridState.clear();
-              gridState = potions.getPotions();
-              //Finalizamos el Juego
-              _user.incrementWins();
-              _signaling.finishGame();
-              BlocProvider.of<GameBloc>(context).add(EHome());
-            });
-          })
-        ..show();
+      _showWin(win);
     }
 
     if (potions.fullPotions()) {
+      _user.player = '';
+      _user.adversary = '';
       _signaling.finishGame();
       BlocProvider.of<GameBloc>(context).add(EHome());
     }
@@ -221,26 +225,7 @@ class _GameState extends State<Game> with TickerProviderStateMixin {
       }
 
       if (win != null) {
-        AwesomeDialog(
-            context: context,
-            headerAnimationLoop: false,
-            dialogType: DialogType.SUCCES,
-            animType: AnimType.SCALE,
-            title: 'GANADOR',
-            desc: _user.player == win ? _user.displayName : _user.adversary,
-            //btnCancelOnPress: () {},
-            btnOkOnPress: () {
-              setState(() {
-                win == 'p1' ? p1win++ : p2win++;
-                potions.clearPotions();
-                gridState.clear();
-                gridState = potions.getPotions();
-                //Finalizamos el Juego
-                _signaling.finishGame();
-                BlocProvider.of<GameBloc>(context).add(EHome());
-              });
-            })
-          ..show();
+        _showWin(win);
       }
 
       _signaling.emit('changeTurn', {"player": player, "x": x, "y": y});

@@ -26,8 +26,8 @@ class _RequestPageState extends State<RequestPage> {
           children: <Widget>[
             ClipRRect(
               borderRadius: BorderRadius.circular(50),
-              child: Image.network(
-                'https://image.freepik.com/vector-gratis/botella-pocion-roja-icono-juego-elixir-magico_70339-62.jpg',
+              child: Image.asset(
+                'pocion.png',
                 width: 100,
               ),
             ),

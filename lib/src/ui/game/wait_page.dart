@@ -13,21 +13,25 @@ class WaitPage extends StatefulWidget {
 }
 
 class _WaitPageState extends State<WaitPage> {
-
   Signaling _signaling = GetIt.I.get<Signaling>();
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
           child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
-          ClipRRect(
-            borderRadius: BorderRadius.circular(50),
-            child: Image.network(
-              'https://image.freepik.com/vector-gratis/botella-pocion-roja-icono-juego-elixir-magico_70339-62.jpg',
-              width: 100,
+          Container(
+            padding: EdgeInsets.all(5),
+            decoration:
+                BoxDecoration(color: Colors.black12, shape: BoxShape.circle),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(50),
+              child: Image.asset(
+                'assets/pocion.png',
+                width: 120,
+              ),
             ),
           ),
           SizedBox(
@@ -38,14 +42,17 @@ class _WaitPageState extends State<WaitPage> {
             style: GoogleFonts.griffy(),
             textScaleFactor: 2,
           ),
+          SizedBox(
+            height: 30,
+          ),
           FloatingActionButton(
-          onPressed: () {
-            _signaling.finishGame();
-            BlocProvider.of<GameBloc>(context).add(EHome());
-          },
-          backgroundColor: Colors.redAccent,
-          child: Icon(Icons.cancel),
-        ),
+            onPressed: () {
+              _signaling.finishGame();
+              BlocProvider.of<GameBloc>(context).add(EHome());
+            },
+            backgroundColor: Colors.deepPurple,
+            child: Icon(Icons.cancel),
+          ),
         ],
       )),
     );

@@ -44,11 +44,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.black12,
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.exit_to_app),
             onPressed: () {
+              _signaling.emit('logout', _user.displayName);
               BlocProvider.of<AuthenticationBloc>(context).add(LoggedOut());
             },
           )
@@ -63,7 +64,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
             child: Container(
               child: StreamBuilder(
                 stream: widget._userRepository.usersStream,
-                //Firestore.instance.collection('users').snapshots(),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {
                     return Center(
@@ -86,8 +86,8 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                 shape: new RoundedRectangleBorder(
                                     borderRadius:
                                         new BorderRadius.circular(30.0)),
-                                padding: EdgeInsets.all(5),
-                                color: Colors.transparent,
+                                padding: EdgeInsets.all(10),
+                                color: Colors.black12,
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -134,12 +134,21 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
                                         children: <Widget>[
-                                          Text(
-                                            snapshot.data.documents[index]
-                                                ['displayName'],
-                                            style: TextStyle(
-                                                color: Colors.black,
-                                                fontSize: 18),
+                                          Column(
+                                            children: <Widget>[
+                                              Text(
+                                                snapshot.data.documents[index]
+                                                    ['displayName'],
+                                                style: GoogleFonts.griffy(
+                                                    fontSize: 18),
+                                              ),
+                                              Text(
+                                                'Potions: ${snapshot.data.documents[index]['wins']}',
+                                                style: GoogleFonts.griffy(
+                                                    color: Colors.deepPurple,
+                                                    fontSize: 20),
+                                              )
+                                            ],
                                           ),
                                           snapshot.data.documents[index]
                                                   ['isActive']
@@ -148,7 +157,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                                       ''
                                                   ? Image(
                                                       image: AssetImage(
-                                                          "assets/magia-2.png"),
+                                                          "assets/boton-de-play.png"),
                                                       width: 50,
                                                     )
                                                   : Column(

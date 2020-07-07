@@ -23,6 +23,12 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       add(ERequest());
     };
 
+    _signaling.onCancelRequest = () {
+      _user.player = '';
+      _user.adversary = '';
+      add(EHome());
+    };
+
     _signaling.onResponse = (response) {
       if (response) {
         _user.player = 'p1';
@@ -30,10 +36,6 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       } else {
         add(EHome());
       }
-    };
-
-    _signaling.onFinish = () {
-      add(EHome());
     };
   }
 

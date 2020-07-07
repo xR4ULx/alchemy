@@ -8,7 +8,7 @@ typedef OnDisconnected(String username);
 typedef OnRequest(String player1);
 typedef OnResponse(bool response);
 typedef OnChangeTurn(data);
-typedef OnFinish();
+typedef OnCancelRequest();
 
 class Signaling {
   IO.Socket _socket;
@@ -16,9 +16,9 @@ class Signaling {
   OnRequest onRequest;
   OnResponse onResponse;
   OnChangeTurn onChangeTurn;
-  OnFinish onFinish;
+  OnCancelRequest onCancelRequest;
 
-  IncallManager _incallManager = IncallManager();
+  //IncallManager _incallManager = IncallManager();
 
   Signaling() {
     _connect();
@@ -26,9 +26,9 @@ class Signaling {
 
   _connect() {
     //String uri = 'https://backgame.herokuapp.com';
-    String uriDev = 'http://192.168.1.41:5050';
+    String uri = 'http://192.168.1.41:5050';
 
-    _socket = IO.io(uriDev, <String, dynamic>{
+    _socket = IO.io(uri, <String, dynamic>{
       'transports': ['websocket'],
     });
 
@@ -37,37 +37,37 @@ class Signaling {
     });
 
     _socket.on('on-request', (player1) {
-      _incallManager.start(
-          media: MediaType.AUDIO, auto: false, ringback: '_DEFAULT_');
+      //_incallManager.start(media: MediaType.AUDIO, auto: false, ringback: '_DEFAULT_');
       onRequest(player1);
     });
 
+    _socket.on('on-cancel-request', (value) {
+      onCancelRequest();
+    });
+
     _socket.on('on-response', (response) {
+      //_incallManager.setForceSpeakerphoneOn(flag: ForceSpeakerType.FORCE_ON);
       onResponse(response);
     });
 
     _socket.on('on-changeTurn', (data) {
       onChangeTurn(data);
     });
-
-    _socket.on('on-finish', (data) {
-      onFinish();
-    });
   }
 
   acceptOrDecline(bool accept, String adversary) async {
-    _incallManager.stopRingtone();
+    //_incallManager.stopRingtone();
     if (accept) {
       emit('response', {"displayName": adversary, "accept": true});
-      _incallManager.start();
-      _incallManager.setForceSpeakerphoneOn(flag: ForceSpeakerType.FORCE_ON);
+      //_incallManager.start();
+      //_incallManager.setForceSpeakerphoneOn(flag: ForceSpeakerType.FORCE_ON);
     } else {
       emit('response', {"displayName": adversary, "accept": false});
     }
   }
 
   finishGame() {
-    _incallManager.stop();
+    //_incallManager.stop();
     emit('finish', true);
   }
 
