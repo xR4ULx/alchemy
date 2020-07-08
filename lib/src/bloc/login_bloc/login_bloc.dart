@@ -3,7 +3,6 @@ import 'package:alchemy/src/repository/user_repository.dart';
 import 'package:bloc/bloc.dart';
 import 'dart:async';
 import 'package:meta/meta.dart';
-import 'package:rxdart/rxdart.dart';
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
   UserRepository _userRepository;

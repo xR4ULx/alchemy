@@ -53,6 +53,10 @@ class Signaling {
     _socket.on('on-changeTurn', (data) {
       onChangeTurn(data);
     });
+
+    _socket.on('on-finish', (data) {
+      finishGame();
+    });
   }
 
   acceptOrDecline(bool accept, String adversary) async {
@@ -68,7 +72,7 @@ class Signaling {
 
   finishGame() {
     //_incallManager.stop();
-    emit('finish', true);
+    emit('exit-game', true);
   }
 
   emit(String event, dynamic data) {

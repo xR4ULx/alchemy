@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:alchemy/src/bloc/game_bloc/bloc.dart';
 import 'package:alchemy/src/repository/potion_model.dart';
 import 'package:alchemy/src/repository/user_model.dart';
@@ -42,10 +40,16 @@ class _GameState extends State<Game> with TickerProviderStateMixin {
     super.initState();
   }
 
+  Future<void> exitGame() async {
+    _signaling.emit('finish', true);
+    Navigator.of(context).popAndPushNamed('/root');
+    return true;
+  }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: () => Navigator.of(context).popAndPushNamed('/root'),
+      onWillPop: () => exitGame(),
       child: Scaffold(
         body: AnimatedBackground(
             behaviour: RandomParticleBehaviour(),
@@ -53,7 +57,7 @@ class _GameState extends State<Game> with TickerProviderStateMixin {
             child: _buildGameBody()),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            _signaling.finishGame();
+            _signaling.emit('finish', true);
             BlocProvider.of<GameBloc>(context).add(EHome());
           },
           backgroundColor: Colors.redAccent,

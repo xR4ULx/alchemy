@@ -1,6 +1,5 @@
 import 'package:alchemy/src/bloc/game_bloc/bloc.dart';
 import 'package:alchemy/src/bloc/game_bloc/game_bloc.dart';
-import 'package:alchemy/src/ui/game/game_page.dart';
 import 'package:alchemy/src/bloc/authentication_bloc/bloc.dart';
 import 'package:alchemy/src/repository/user_model.dart';
 import 'package:alchemy/src/repository/user_repository.dart';
@@ -32,7 +31,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     widget._userRepository.getAllUsers();
     _user.player = '';

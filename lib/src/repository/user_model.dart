@@ -1,9 +1,7 @@
 import 'dart:convert';
 
-import 'package:alchemy/src/repository/user_repository.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-UserRepository _userRepository = UserRepository();
 
 User userFireFromJson(String str) => User.fromJson(json.decode(str));
 String userFireToJson(User data) => json.encode(data.toJson());
