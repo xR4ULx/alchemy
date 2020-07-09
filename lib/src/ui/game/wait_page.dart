@@ -1,4 +1,5 @@
 import 'package:alchemy/src/bloc/game_bloc/bloc.dart';
+import 'package:alchemy/src/repository/user_model.dart';
 import 'package:alchemy/src/util/signaling.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -14,6 +15,7 @@ class WaitPage extends StatefulWidget {
 
 class _WaitPageState extends State<WaitPage> {
   Signaling _signaling = GetIt.I.get<Signaling>();
+  User _user = GetIt.I.get<User>();
 
   @override
   Widget build(BuildContext context) {
@@ -47,8 +49,7 @@ class _WaitPageState extends State<WaitPage> {
           ),
           FloatingActionButton(
             onPressed: () {
-              _signaling.finishGame();
-              BlocProvider.of<GameBloc>(context).add(EHome());
+              _signaling.emit('finish', true);
             },
             backgroundColor: Colors.deepPurple,
             child: Icon(Icons.cancel),

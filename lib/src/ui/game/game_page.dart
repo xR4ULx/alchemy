@@ -40,25 +40,18 @@ class _GameState extends State<Game> with TickerProviderStateMixin {
     super.initState();
   }
 
-  Future<void> exitGame() async {
-    _signaling.emit('finish', true);
-    Navigator.of(context).popAndPushNamed('/root');
-    return true;
-  }
-
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: () => exitGame(),
+      onWillPop: () => Navigator.of(context).popAndPushNamed('/root'),
       child: Scaffold(
         body: AnimatedBackground(
-            behaviour: RandomParticleBehaviour(),
+            behaviour: BubblesBehaviour(),
             vsync: this,
             child: _buildGameBody()),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
             _signaling.emit('finish', true);
-            BlocProvider.of<GameBloc>(context).add(EHome());
           },
           backgroundColor: Colors.redAccent,
           child: Icon(Icons.cancel),
@@ -178,7 +171,7 @@ class _GameState extends State<Game> with TickerProviderStateMixin {
             gridState.clear();
             gridState = potions.getPotions();
             //Finalizamos el Juego
-            _signaling.finishGame();
+            _signaling.emit('exit-game', true);
             BlocProvider.of<GameBloc>(context).add(EHome());
           });
         })
@@ -204,7 +197,7 @@ class _GameState extends State<Game> with TickerProviderStateMixin {
     if (potions.fullPotions()) {
       _user.player = '';
       _user.adversary = '';
-      _signaling.finishGame();
+      _signaling.emit('exit-game', true);
       BlocProvider.of<GameBloc>(context).add(EHome());
     }
   }
@@ -235,7 +228,7 @@ class _GameState extends State<Game> with TickerProviderStateMixin {
       _signaling.emit('changeTurn', {"player": player, "x": x, "y": y});
 
       if (potions.fullPotions()) {
-        _signaling.finishGame();
+        _signaling.emit('exit-game', true);
         BlocProvider.of<GameBloc>(context).add(EHome());
       }
     }

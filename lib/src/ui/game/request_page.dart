@@ -54,8 +54,7 @@ class _RequestPageState extends State<RequestPage> {
                 SizedBox(width: 80),
                 FloatingActionButton(
                   onPressed: () {
-                    _signaling.acceptOrDecline(false, _user.adversary);
-                    BlocProvider.of<GameBloc>(context).add(EHome());
+                    _signaling.emit('finish', true);
                   },
                   backgroundColor: Colors.redAccent,
                   child: Icon(Icons.cancel),

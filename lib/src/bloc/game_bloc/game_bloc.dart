@@ -37,6 +37,16 @@ class GameBloc extends Bloc<GameEvent, GameState> {
         add(EHome());
       }
     };
+
+    _signaling.onFinishGame = () {
+      _signaling.emit('exit-game', true);
+    };
+
+    _signaling.onExitGame = () {
+      _user.player = '';
+      _user.adversary = '';
+      add(EHome());
+    };
   }
 
   @override

@@ -9,6 +9,8 @@ typedef OnRequest(String player1);
 typedef OnResponse(bool response);
 typedef OnChangeTurn(data);
 typedef OnCancelRequest();
+typedef OnExitGame();
+typedef OnFinishGame();
 
 class Signaling {
   IO.Socket _socket;
@@ -17,6 +19,8 @@ class Signaling {
   OnResponse onResponse;
   OnChangeTurn onChangeTurn;
   OnCancelRequest onCancelRequest;
+  OnFinishGame onFinishGame;
+  OnExitGame onExitGame;
 
   //IncallManager _incallManager = IncallManager();
 
@@ -55,7 +59,11 @@ class Signaling {
     });
 
     _socket.on('on-finish', (data) {
-      finishGame();
+      onFinishGame();
+    });
+
+    _socket.on('on-exit-game', (data) {
+      onExitGame();
     });
   }
 
@@ -68,11 +76,6 @@ class Signaling {
     } else {
       emit('response', {"displayName": adversary, "accept": false});
     }
-  }
-
-  finishGame() {
-    //_incallManager.stop();
-    emit('exit-game', true);
   }
 
   emit(String event, dynamic data) {

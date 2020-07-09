@@ -33,7 +33,7 @@ void main() {
   ));
 }
 
-class App extends StatelessWidget {
+class App extends StatefulWidget {
   final UserRepository _userRepository;
 
   App({Key key, @required UserRepository userRepository})
@@ -41,6 +41,20 @@ class App extends StatelessWidget {
         _userRepository = userRepository,
         super(key: key);
 
+  @override
+  _AppState createState() => _AppState();
+}
+
+class _AppState extends State<App> {
+
+  User _user = GetIt.I.get<User>();
+  Signaling _signaling = GetIt.I.get<Signaling>();
+  
+  @override
+  void initState() {
+    
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -50,12 +64,13 @@ class App extends StatelessWidget {
             return SplashScreen();
           }
           if (state is Authenticated) {
+            _signaling.emit('login', _user.displayName);
             return RootPage(
-                name: state.displayName, userRepository: _userRepository);
+                name: state.displayName, userRepository: widget._userRepository);
           }
           if (state is Unauthenticated) {
             return LoginScreen(
-              userRepository: _userRepository,
+              userRepository: widget._userRepository,
             );
           }
           return Container();

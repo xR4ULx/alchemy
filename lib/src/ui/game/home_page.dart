@@ -35,7 +35,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     widget._userRepository.getAllUsers();
     _user.player = '';
     _user.adversary = '';
-    _signaling.emit('login', _user.displayName);
   }
 
   @override
