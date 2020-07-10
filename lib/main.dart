@@ -45,16 +45,49 @@ class App extends StatefulWidget {
   _AppState createState() => _AppState();
 }
 
-class _AppState extends State<App> {
-
+class _AppState extends State<App> with WidgetsBindingObserver {
   User _user = GetIt.I.get<User>();
   Signaling _signaling = GetIt.I.get<Signaling>();
-  
+
   @override
   void initState() {
-    
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
   }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    switch (state) {
+      case AppLifecycleState.resumed:
+        print('##### RESUMED ####');
+        if (_user != null) {
+          _user.isActive = true;
+          widget._userRepository.setActive(true);
+        }
+        break;
+      case AppLifecycleState.detached:
+        print('#### DETACHED ####');
+        if (_user != null) {
+          widget._userRepository.setActive(false);
+        }
+        break;
+      case AppLifecycleState.inactive:
+        print('#### INACTIVE ####');
+        if (_user != null) {
+          widget._userRepository.setActive(false);
+        }
+        break;
+      case AppLifecycleState.paused:
+        print('#### PAUSED ####');
+        if (_user != null) {
+          widget._userRepository.setActive(false);
+        }
+        break;
+    }
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -66,7 +99,8 @@ class _AppState extends State<App> {
           if (state is Authenticated) {
             _signaling.emit('login', _user.displayName);
             return RootPage(
-                name: state.displayName, userRepository: widget._userRepository);
+                name: state.displayName,
+                userRepository: widget._userRepository);
           }
           if (state is Unauthenticated) {
             return LoginScreen(

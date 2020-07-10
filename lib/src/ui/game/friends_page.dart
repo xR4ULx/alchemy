@@ -12,23 +12,25 @@ import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:simple_search_bar/simple_search_bar.dart';
 
-class HomePage extends StatefulWidget {
+class FriendsPage extends StatefulWidget {
   final String name;
   final UserRepository _userRepository;
 
-  HomePage(
+  FriendsPage(
       {Key key, @required this.name, @required UserRepository userRepository})
       : assert(userRepository != null),
         _userRepository = userRepository,
         super(key: key);
 
   @override
-  _HomePageState createState() => _HomePageState();
+  _FriendsPageState createState() => _FriendsPageState();
 }
 
-class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
+class _FriendsPageState extends State<FriendsPage>
+    with TickerProviderStateMixin {
   User _user = GetIt.I.get<User>();
   Signaling _signaling = GetIt.I.get<Signaling>();
+  final AppBarController appBarController = AppBarController();
 
   @override
   void initState() {
@@ -36,6 +38,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     widget._userRepository.getAllUsers();
     _user.player = '';
     _user.adversary = '';
+  }
+
+  void logOut() {
+    _signaling.emit('logout', _user.displayName);
+    BlocProvider.of<AuthenticationBloc>(context).add(LoggedOut());
   }
 
   @override
@@ -70,7 +77,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                               padding: EdgeInsets.all(2),
                               child: Column(
                                 children: <Widget>[
-                                  Text('All Users'),
+                                  Text('Friends'),
                                   FlatButton(
                                     shape: new RoundedRectangleBorder(
                                         borderRadius:
@@ -127,18 +134,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                                             mainAxisAlignment:
                                                 MainAxisAlignment.spaceBetween,
                                             children: <Widget>[
-                                              CupertinoButton(
-                                                onPressed: () {},
-                                                padding: EdgeInsets.all(5),
-                                                child: ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(10),
-                                                  child: Image.asset(
-                                                    "assets/seguir.png",
-                                                    width: 40,
-                                                  ),
-                                                ),
-                                              ),
                                               Column(
                                                 children: <Widget>[
                                                   Text(

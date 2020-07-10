@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-
 User userFireFromJson(String str) => User.fromJson(json.decode(str));
 String userFireToJson(User data) => json.encode(data.toJson());
 
@@ -30,7 +29,18 @@ class User {
   bool _isActive;
   int _wins;
 
+  _createIndexes(String name) {
+    List<String> _indexes = [""];
+    for (int i = 1; i <= _displayName.length; i++) {
+      String subString = _displayName.substring(0, i).toLowerCase();
+      _indexes.add(subString);
+    }
+    return _indexes;
+  }
+
   User();
+
+  String get indexes => _createIndexes(displayName);
 
   String get displayName {
     return _displayName;
@@ -111,5 +121,6 @@ class User {
         "adversary": _adversary,
         "isActive": _isActive,
         "wins": _wins,
+        "indexes": _createIndexes(_displayName),
       };
 }

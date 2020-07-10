@@ -29,8 +29,8 @@ class Signaling {
   }
 
   _connect() {
-    //String uri = 'https://backgame.herokuapp.com';
-    String uri = 'http://192.168.1.41:5050';
+    String uri = 'https://backgame.herokuapp.com';
+    //String uri = 'http://192.168.1.41:5050';
 
     _socket = IO.io(uri, <String, dynamic>{
       'transports': ['websocket'],

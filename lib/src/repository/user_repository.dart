@@ -32,6 +32,18 @@ class UserRepository {
     }
   }
 
+  void searchUsers(String query) async {
+    QuerySnapshot initSnap;
+    _usersSink(initSnap);
+    await for (QuerySnapshot snap in Firestore.instance
+        .collection('users')
+        .where('indexes', arrayContains: query.toLowerCase())
+        .orderBy('isActive', descending: true)
+        .snapshots()) {
+      _usersSink(snap);
+    }
+  }
+
   // Constructor
   UserRepository({FirebaseAuth firebaseAuth, GoogleSignIn googleSignIn})
       : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance,
@@ -45,7 +57,6 @@ class UserRepository {
     final AuthCredential credential = GoogleAuthProvider.getCredential(
         accessToken: googleAuth.accessToken, idToken: googleAuth.idToken);
 
-    setActive(true);
     return (await _firebaseAuth.signInWithCredential(credential)).user;
   }
 
