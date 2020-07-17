@@ -1,6 +1,7 @@
 import 'package:alchemy/src/bloc/login_bloc/bloc.dart';
 import 'package:alchemy/src/repository/user_repository.dart';
 import 'package:bloc/bloc.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:async';
 import 'package:meta/meta.dart';
 
@@ -45,8 +46,9 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
 
   Stream<LoginState> _mapLoginWithGooglePressedToState() async* {
     try {
-      await _userRepository.signInWithGoogle();
-      await _userRepository.setActive(true);
+      await _userRepository.signInWithGoogle().then((_) {
+        _userRepository.setActive(true);
+      });
       yield LoginState.success();
     } catch (_) {
       yield LoginState.failure();

@@ -1,10 +1,14 @@
 // Imports
 import 'dart:async';
+import 'dart:io';
 import 'package:alchemy/src/repository/user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+
+
 
 class UserRepository {
   final FirebaseAuth _firebaseAuth;
@@ -24,6 +28,8 @@ class UserRepository {
   }
 
   void getAllUsers() async {
+    QuerySnapshot initSnap;
+    _usersSink(initSnap);
     await for (QuerySnapshot snap in Firestore.instance
         .collection('users')
         .orderBy('isActive', descending: true)
@@ -32,9 +38,62 @@ class UserRepository {
     }
   }
 
+  void getFollows() async {
+    QuerySnapshot initSnap;
+    _usersSink(initSnap);
+    await for (QuerySnapshot snap in Firestore.instance
+        .collection('users')
+        .where('follows', arrayContains: _user.uid)
+        .orderBy('isActive', descending: true)
+        .snapshots()) {
+      _usersSink(snap);
+    }
+  }
+
+  void followTo(String name) async {
+    final QuerySnapshot docs = await Firestore.instance
+        .collection('users')
+        .where('displayName', isEqualTo: name)
+        .getDocuments();
+    final List<DocumentSnapshot> documents = docs.documents;
+
+    String followid = documents[0]['uid'];
+    List<dynamic> follows = documents[0]['follows'];
+    final result = follows.where((item) => item == _user.uid).toList();
+    if (result.length == 0) {
+      follows.add(_user.uid);
+
+      Firestore.instance
+          .collection('users')
+          .document(followid)
+          .updateData({'follows': follows});
+    }
+  }
+
+  void unfollowTo(String name) async {
+    final QuerySnapshot docs = await Firestore.instance
+        .collection('users')
+        .where('displayName', isEqualTo: name)
+        .getDocuments();
+    final List<DocumentSnapshot> documents = docs.documents;
+
+    String followid = documents[0]['uid'];
+    List<dynamic> follows = documents[0]['follows'];
+    final result = follows.where((item) => item == _user.uid).toList();
+    if (result.length != 0) {
+      follows.remove(_user.uid);
+
+      Firestore.instance
+          .collection('users')
+          .document(followid)
+          .updateData({'follows': follows});
+    }
+  }
+
   void searchUsers(String query) async {
     QuerySnapshot initSnap;
     _usersSink(initSnap);
+
     await for (QuerySnapshot snap in Firestore.instance
         .collection('users')
         .where('indexes', arrayContains: query.toLowerCase())
@@ -99,6 +158,11 @@ class UserRepository {
               .document(_firebaseUser.uid)
               .setData(_user.toJson());
         } else {
+          Firestore.instance
+              .collection('users')
+              .document(_firebaseUser.uid)
+              .updateData({'isActive': active});
+
           _user.displayName = documents[0]['displayName'];
           _user.photoUrl = documents[0]['photoUrl'];
           _user.uid = documents[0]['uid'];
@@ -106,6 +170,7 @@ class UserRepository {
           _user.adversary = documents[0]['adversary'];
           _user.wins = documents[0]['wins'];
           _user.isActive = documents[0]['isActive'];
+          _user.follows = documents[0]['follows'];
         }
       }
     } else {

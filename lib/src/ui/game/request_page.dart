@@ -20,6 +20,7 @@ class _RequestPageState extends State<RequestPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).primaryColor,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -36,7 +37,9 @@ class _RequestPageState extends State<RequestPage> {
             ),
             Text(
               _user.adversary,
-              style: GoogleFonts.griffy(),
+              style: GoogleFonts.griffy(
+                color: Colors.amber,
+              ),
               textScaleFactor: 3,
             ),
             Row(
@@ -49,7 +52,7 @@ class _RequestPageState extends State<RequestPage> {
                     BlocProvider.of<GameBloc>(context).add(EGame());
                   },
                   backgroundColor: Colors.green,
-                  child: Icon(Icons.camera_front),
+                  child: Icon(Icons.photo_filter),
                 ),
                 SizedBox(width: 80),
                 FloatingActionButton(

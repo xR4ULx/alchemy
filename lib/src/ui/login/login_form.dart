@@ -20,7 +20,8 @@ class LoginForm extends StatefulWidget {
   _LoginFormState createState() => _LoginFormState();
 }
 
-class _LoginFormState extends State<LoginForm> with SingleTickerProviderStateMixin{
+class _LoginFormState extends State<LoginForm>
+    with SingleTickerProviderStateMixin {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
@@ -115,5 +116,4 @@ class _LoginFormState extends State<LoginForm> with SingleTickerProviderStateMix
   void dispose() {
     super.dispose();
   }
-
 }

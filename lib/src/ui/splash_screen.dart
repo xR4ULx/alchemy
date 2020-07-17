@@ -1,3 +1,5 @@
+import 'package:alchemy/main.dart';
+import 'package:alchemy/src/util/colors.dart';
 import 'package:animated_background/animated_background.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -7,12 +9,24 @@ class SplashScreen extends StatefulWidget {
   _SplashScreenState createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin{
+class _SplashScreenState extends State<SplashScreen>
+    with SingleTickerProviderStateMixin {
+  RandomParticleBehaviour _particleBehaviour = new RandomParticleBehaviour();
+  ParticleOptions _particleOptions =
+      new ParticleOptions(baseColor: myAccentColor);
+
+  @override
+  void initState() {
+    super.initState();
+    _particleBehaviour.options = _particleOptions;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        backgroundColor: Theme.of(context).primaryColor,
         body: AnimatedBackground(
-            behaviour: RandomParticleBehaviour(),
+            behaviour: _particleBehaviour,
             vsync: this,
             child: Center(
                 child: Column(
@@ -28,7 +42,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                 ),
                 Text(
                   '4lchemy',
-                  style: GoogleFonts.griffy(),
+                  style: GoogleFonts.griffy(color: Colors.amber),
                   textScaleFactor: 5,
                 ),
                 SizedBox(
@@ -36,7 +50,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                 ),
                 Text(
                   'Loading ...',
-                  style: GoogleFonts.griffy(),
+                  style: GoogleFonts.griffy(color: Colors.amber),
                   textScaleFactor: 3,
                 ),
                 SizedBox(
@@ -44,7 +58,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                 ),
                 Image(
                   alignment: Alignment.centerLeft,
-                  image: AssetImage("assets/text.png"),
+                  image: AssetImage("assets/textamber.png"),
                   width: MediaQuery.of(context).size.width / 2.7,
                 ),
               ],

@@ -7,6 +7,7 @@ import 'package:alchemy/src/repository/user_repository.dart';
 import 'package:alchemy/src/ui/login/login_screen.dart';
 import 'package:alchemy/src/ui/root_page.dart';
 import 'package:alchemy/src/ui/splash_screen.dart';
+import 'package:alchemy/src/util/colors.dart';
 import 'package:alchemy/src/util/signaling.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -26,6 +27,7 @@ void main() {
   setupSingletons();
 
   final UserRepository userRepository = UserRepository();
+
   runApp(BlocProvider(
     create: (context) =>
         AuthenticationBloc(userRepository: userRepository)..add(AppStarted()),
@@ -62,7 +64,6 @@ class _AppState extends State<App> with WidgetsBindingObserver {
       case AppLifecycleState.resumed:
         print('##### RESUMED ####');
         if (_user != null) {
-          _user.isActive = true;
           widget._userRepository.setActive(true);
         }
         break;
@@ -91,6 +92,10 @@ class _AppState extends State<App> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData(
+          primaryColor: myPrimaryColor,
+          accentColor: myAccentColor,
+          primaryColorLight: Colors.amber),
       home: BlocBuilder<AuthenticationBloc, AuthenticationState>(
         builder: (context, state) {
           if (state is Uninitialized) {
