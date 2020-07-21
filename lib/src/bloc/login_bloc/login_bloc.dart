@@ -1,7 +1,6 @@
 import 'package:alchemy/src/bloc/login_bloc/bloc.dart';
 import 'package:alchemy/src/repository/user_repository.dart';
 import 'package:bloc/bloc.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:async';
 import 'package:meta/meta.dart';
 

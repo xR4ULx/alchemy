@@ -76,3 +76,5 @@ lib/generated_plugin_registrant.dart
 Flutter
 Gitignore
 Git
+.flutter-plugins
+.flutter-plugins-dependencies

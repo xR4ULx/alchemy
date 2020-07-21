@@ -18,12 +18,10 @@ class CheckWin {
   int winsPlayer;
   Potions _potions;
   String player;
-  Animation _animation;
 
   List<List<Coordenadas>> diagonales = [];
 
   List<Coordenadas> d1 = [
-    new Coordenadas(0, 3),
     new Coordenadas(0, 3),
     new Coordenadas(1, 2),
     new Coordenadas(2, 1),
@@ -97,7 +95,6 @@ class CheckWin {
     winsPlayer = 0;
     this.player = player;
     this._potions = potions;
-    this._animation = colorAnimation;
     diagonales.add(d1);
     diagonales.add(d2);
     diagonales.add(d3);

@@ -1,4 +1,4 @@
-import 'package:alchemy/main.dart';
+import 'dart:ui';
 import 'package:alchemy/src/bloc/game_bloc/bloc.dart';
 import 'package:alchemy/src/bloc/game_bloc/game_bloc.dart';
 import 'package:alchemy/src/bloc/authentication_bloc/bloc.dart';
@@ -101,9 +101,9 @@ class _FriendsPageState extends State<FriendsPage>
                                     decoration: BoxDecoration(
                                       boxShadow: [
                                         BoxShadow(
-                                          offset: const Offset(0.0, 0.0),
-                                          blurRadius: 50.0,
-                                          spreadRadius: 1.0,
+                                          offset: const Offset(0.0, .0),
+                                          blurRadius: 26.0,
+                                          spreadRadius: 0.2,
                                           color: myAccentColor,
                                         )
                                       ],
@@ -111,7 +111,7 @@ class _FriendsPageState extends State<FriendsPage>
                                     child: FlatButton(
                                       shape: new RoundedRectangleBorder(
                                           borderRadius:
-                                              new BorderRadius.circular(70.0)),
+                                              new BorderRadius.circular(10.0)),
                                       padding: EdgeInsets.all(10),
                                       color: Colors.white,
                                       child: Row(
@@ -125,9 +125,9 @@ class _FriendsPageState extends State<FriendsPage>
                                             children: <Widget>[
                                               Container(
                                                 decoration: BoxDecoration(
-                                                    color: myPrimaryColor,
+                                                    color: myAccentColor,
                                                     shape: BoxShape.circle),
-                                                padding: EdgeInsets.all(3),
+                                                padding: EdgeInsets.all(1),
                                                 child: ClipRRect(
                                                   borderRadius:
                                                       BorderRadius.circular(25),
@@ -135,7 +135,7 @@ class _FriendsPageState extends State<FriendsPage>
                                                     snapshot.data
                                                             .documents[index]
                                                         ['photoUrl'],
-                                                    width: 50,
+                                                    width: 45,
                                                   ),
                                                 ),
                                               ),
@@ -195,6 +195,10 @@ class _FriendsPageState extends State<FriendsPage>
                                                               color: Colors.red,
                                                               size: 30,
                                                             )),
+                                                  SizedBox(
+                                                    width: 10,
+                                                    height: 0,
+                                                  ),
                                                   Column(
                                                     crossAxisAlignment:
                                                         CrossAxisAlignment
@@ -213,34 +217,74 @@ class _FriendsPageState extends State<FriendsPage>
                                                         'Potions: ${snapshot.data.documents[index]['wins']}',
                                                         style:
                                                             GoogleFonts.griffy(
-                                                                color: Theme.of(
-                                                                        context)
-                                                                    .accentColor,
+                                                                color: Colors.blue,
                                                                 fontSize: 16),
                                                       )
                                                     ],
                                                   ),
-                                                  SizedBox(
-                                                    width: 40,
-                                                  ),
+                                                  Expanded(
+                                                      child: Column(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment.end,
+                                                    children: <Widget>[
+                                                      SizedBox(
+                                                        width: 40,
+                                                      ),
+                                                    ],
+                                                  )),
                                                   snapshot.data.documents[index]
                                                           ['isActive']
                                                       ? snapshot.data.documents[
                                                                       index]
                                                                   ['player'] ==
                                                               ''
-                                                          ? Image(
-                                                              image: AssetImage(
-                                                                  "assets/boton-de-play.png"),
-                                                              width: 35,
-                                                            )
-                                                          : Column(
+                                                          ? Container(
+                                                              decoration:
+                                                                  BoxDecoration(
+                                                                boxShadow: [
+                                                                  BoxShadow(
+                                                                    offset:
+                                                                        const Offset(
+                                                                            0.0,
+                                                                            .0),
+                                                                    blurRadius:
+                                                                        26.0,
+                                                                    spreadRadius:
+                                                                        0.2,
+                                                                    color: Colors.blue,
+                                                                  )
+                                                                ],
+                                                              ),
+                                                              child: Image(
+                                                                image: AssetImage(
+                                                                    "assets/boton-de-play.png"),
+                                                                width: 45,
+                                                              ))
+                                                          : Container(
+                                                              decoration:
+                                                                  BoxDecoration(
+                                                                boxShadow: [
+                                                                  BoxShadow(
+                                                                    offset:
+                                                                        const Offset(
+                                                                            0.0,
+                                                                            .0),
+                                                                    blurRadius:
+                                                                        26.0,
+                                                                    spreadRadius:
+                                                                        0.2,
+                                                                    color: Colors
+                                                                        .red,
+                                                                  )
+                                                                ],
+                                                              ),
+                                                              child: Column(
                                                               children: <
                                                                   Widget>[
                                                                 Image(
                                                                   image: AssetImage(
                                                                       "assets/magia.png"),
-                                                                  width: 35,
+                                                                  width: 45,
                                                                 ),
                                                                 Text(
                                                                   'Ocupado',
@@ -250,7 +294,8 @@ class _FriendsPageState extends State<FriendsPage>
                                                                       1,
                                                                 )
                                                               ],
-                                                            )
+                                                            ))
+                                          
                                                       : Container(
                                                           width: 0.0,
                                                           height: 0.0,

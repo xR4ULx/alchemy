@@ -18,6 +18,7 @@ GetIt getIt = GetIt.instance;
 void setupSingletons() async {
   getIt.registerLazySingleton<User>(() => User());
   getIt.registerLazySingleton<Signaling>(() => Signaling());
+  getIt.registerLazySingleton<UserRepository>(() => UserRepository());
 }
 
 void main() {
@@ -26,7 +27,7 @@ void main() {
 
   setupSingletons();
 
-  final UserRepository userRepository = UserRepository();
+  final UserRepository userRepository = GetIt.I.get<UserRepository>();
 
   runApp(BlocProvider(
     create: (context) =>

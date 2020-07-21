@@ -10,6 +10,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:simple_search_bar/simple_search_bar.dart';
+import 'package:alchemy/src/util/colors.dart';
 
 class UsersPage extends StatefulWidget {
   final String name;
@@ -97,19 +98,33 @@ class _UsersPageState extends State<UsersPage> {
     return Scaffold(
       appBar: searchBar(),
       body: _children[_currentIndex],
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          logOut();
-        },
-        backgroundColor: Colors.redAccent,
-        child: Icon(Icons.cloud_off),
-      ),
+      floatingActionButton: Container(
+          decoration: BoxDecoration(
+            boxShadow: [
+              BoxShadow(
+                offset: const Offset(0.0, .0),
+                blurRadius: 26.0,
+                spreadRadius: 3.2,
+                color: Colors.redAccent,
+              )
+            ],
+          ),
+          child: FloatingActionButton(
+            onPressed: () {
+              logOut();
+            },
+            backgroundColor: Colors.redAccent,
+            child: Icon(
+              Icons.cloud_off,
+              color: Colors.white,
+            ),
+          )),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       bottomNavigationBar: BubbleBottomBar(
         backgroundColor: Theme.of(context).primaryColor,
         hasNotch: true,
         fabLocation: BubbleBottomBarFabLocation.end,
-        opacity: .1,
+        opacity: .2,
         currentIndex: _currentIndex,
         onTap: changePage,
         borderRadius: BorderRadius.vertical(
@@ -118,29 +133,34 @@ class _UsersPageState extends State<UsersPage> {
         elevation: 8,
         items: <BubbleBottomBarItem>[
           BubbleBottomBarItem(
-              backgroundColor: Theme.of(context).primaryColorLight,
+              backgroundColor: Colors.amber,
               icon: Icon(
-                Icons.supervised_user_circle,
-                color: Colors.white,
+                Icons.home,
+                color: Colors.amber,
               ),
               activeIcon: Icon(
-                Icons.supervised_user_circle,
-                color: Theme.of(context).primaryColorLight,
-              ),
-              title: Text("All")),
-          BubbleBottomBarItem(
-              backgroundColor: Colors.white,
-              icon: Icon(
-                Icons.face,
-                color: Colors.white,
-              ),
-              activeIcon: Icon(
-                Icons.face,
-                color: Theme.of(context).primaryColorLight,
+                Icons.home,
+                color: Colors.amber,
               ),
               title: Text(
-                "Friends",
-                style: TextStyle(color: Theme.of(context).primaryColorLight),
+                "Home",
+                style: GoogleFonts.griffy(color: Colors.amber),
+                textScaleFactor: 1.1,
+              )),
+          BubbleBottomBarItem(
+              backgroundColor: Colors.redAccent,
+              icon: Icon(
+                Icons.favorite,
+                color: Colors.redAccent,
+              ),
+              activeIcon: Icon(
+                Icons.favorite_border,
+                color: Colors.redAccent,
+              ),
+              title: Text(
+                "Favorite",
+                style: GoogleFonts.griffy(color: Colors.redAccent),
+                textScaleFactor: 1.1,
               )),
         ],
       ),

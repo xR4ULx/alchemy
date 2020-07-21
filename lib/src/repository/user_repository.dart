@@ -1,10 +1,8 @@
 // Imports
 import 'dart:async';
-import 'dart:io';
 import 'package:alchemy/src/repository/user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -48,6 +46,21 @@ class UserRepository {
         .snapshots()) {
       _usersSink(snap);
     }
+  }
+
+  void updateUser() async{
+    final QuerySnapshot docs = await Firestore.instance
+        .collection('users')
+        .where('displayName', isEqualTo: _user.displayName)
+        .getDocuments();
+    final List<DocumentSnapshot> documents = docs.documents;
+
+    String _userid = documents[0]['uid'];
+    
+    Firestore.instance
+          .collection('users')
+          .document(_userid)
+          .updateData({'player': _user.player, 'adversary': _user.adversary});
   }
 
   void followTo(String name) async {

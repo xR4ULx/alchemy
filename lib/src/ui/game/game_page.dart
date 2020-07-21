@@ -1,9 +1,11 @@
 import 'package:alchemy/src/repository/potion_model.dart';
 import 'package:alchemy/src/repository/user_model.dart';
+import 'package:alchemy/src/repository/user_repository.dart';
 import 'package:alchemy/src/util/check_win.dart';
 import 'package:alchemy/src/util/colors.dart';
 import 'package:alchemy/src/util/signaling.dart';
 import 'package:animated_background/animated_background.dart';
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -21,6 +23,7 @@ class Game extends StatefulWidget {
 class _GameState extends State<Game> with TickerProviderStateMixin {
   Signaling _signaling = GetIt.I.get<Signaling>();
   User _user = GetIt.I.get<User>();
+  UserRepository _userRepository = GetIt.I.get<UserRepository>();
 
   AnimationController _controller;
   Animation _colorAnimation;
@@ -44,6 +47,8 @@ class _GameState extends State<Game> with TickerProviderStateMixin {
     player = 'p1';
     alchemyP1 = 0;
     alchemyP2 = 0;
+
+    _userRepository.updateUser();
 
     //Animation
     _controller =
@@ -84,14 +89,32 @@ class _GameState extends State<Game> with TickerProviderStateMixin {
       child: Scaffold(
         backgroundColor: Theme.of(context).primaryColor,
         body: Center(child: _buildGameBody()),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            gridState.clearPotions();
-            _signaling.emit('finish', true);
-          },
-          backgroundColor: Colors.redAccent,
-          child: Icon(Icons.close),
-        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        floatingActionButton: Container(
+            decoration: BoxDecoration(
+              boxShadow: [
+                BoxShadow(
+                  offset: const Offset(0.0, .0),
+                  blurRadius: 26.0,
+                  spreadRadius: 3.2,
+                  color: Colors.redAccent,
+                )
+              ],
+            ),
+            child: FloatingActionButton(
+              onPressed: () {
+                _user.player = '';
+                _user.adversary = '';
+                _userRepository.updateUser();
+                gridState.clearPotions();
+                _signaling.emit('finish', true);
+              },
+              backgroundColor: Colors.redAccent,
+              child: Icon(
+                Icons.close,
+                color: Colors.white,
+              ),
+            )),
       ),
     );
   }
@@ -107,65 +130,22 @@ class _GameState extends State<Game> with TickerProviderStateMixin {
           children: <Widget>[
             SafeArea(
                 child: SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.01)),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                Column(
-                  children: <Widget>[
-                    Image(
-                      image: AssetImage("assets/p1.png"),
-                      width: 60,
-                    ),
-                    Text(
-                      _user.player == 'p1'
-                          ? _user.displayName
-                          : _user.adversary,
-                      style: GoogleFonts.griffy(color: Colors.amber),
-                      textScaleFactor: 2,
-                    ),
-                    Text('Alchemys $alchemyP1',
-                        style: GoogleFonts.griffy(color: Colors.amber),
-                        textScaleFactor: 1)
-                  ],
-                ),
-                Column(
-                  children: <Widget>[
-                    Image(
-                      image: AssetImage("assets/p2.png"),
-                      width: 60,
-                    ),
-                    Text(
-                      _user.player == 'p2'
-                          ? _user.displayName
-                          : _user.adversary,
-                      style: GoogleFonts.griffy(color: Colors.amber),
-                      textScaleFactor: 2,
-                    ),
-                    Text('Alchemys $alchemyP2',
-                        style: GoogleFonts.griffy(color: Colors.amber),
-                        textScaleFactor: 1),
-                  ],
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 3,
-            ),
+                    height: MediaQuery.of(context).size.height * 0.005)),
             Text(
               _user.player == player
                   ? 'Turno de ${_user.displayName}'
                   : 'Turno de ${_user.adversary}',
-              style: GoogleFonts.griffy(color: Theme.of(context).accentColor),
-              textScaleFactor: 2,
+              style: GoogleFonts.griffy(color: Colors.white, shadows: [
+                Shadow(offset: Offset(-1.5, -1.5), color: myAccentColor)
+              ]),
+              textScaleFactor: 1.8,
               textAlign: TextAlign.start,
             ),
             AspectRatio(
-              aspectRatio: 0.80,
+              aspectRatio: 0.93,
               child: Container(
-                padding: const EdgeInsets.all(2.0),
-                margin: const EdgeInsets.all(2.0),
+                padding: EdgeInsets.all(4.0),
+                margin: EdgeInsets.all(4.0),
                 child: GridView.builder(
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: gridStateLength,
@@ -175,6 +155,51 @@ class _GameState extends State<Game> with TickerProviderStateMixin {
                 ),
               ),
             ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                Column(
+                  children: <Widget>[
+                    Text(
+                      _user.player == 'p1'
+                          ? _user.displayName
+                          : _user.adversary,
+                      style: GoogleFonts.griffy(color: Colors.amber),
+                      textScaleFactor: 2,
+                    ),
+                    Text('Alchemys $alchemyP1',
+                        style: GoogleFonts.griffy(color: Colors.amber),
+                        textScaleFactor: 1.2),
+                    Image(
+                      image: AssetImage("assets/p1.png"),
+                      width: 60,
+                    ),
+                  ],
+                ),
+                Column(
+                  children: <Widget>[
+                    Text(
+                      _user.player == 'p2'
+                          ? _user.displayName
+                          : _user.adversary,
+                      style: GoogleFonts.griffy(color: Colors.amber),
+                      textScaleFactor: 2,
+                    ),
+                    Text('Alchemys $alchemyP2',
+                        style: GoogleFonts.griffy(color: Colors.amber),
+                        textScaleFactor: 1.2),
+                    Image(
+                      image: AssetImage("assets/p2.png"),
+                      width: 60,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 20,
+            )
           ]),
     );
   }
@@ -225,10 +250,40 @@ class _GameState extends State<Game> with TickerProviderStateMixin {
     alchemyP2 = check.winsPlayer;
 
     if (gridState.fullPotions()) {
-      _user.player = '';
-      _user.adversary = '';
-      gridState.clearPotions();
-      _signaling.emit('finish', true);
+      
+      String winner = '';
+
+      if (alchemyP1 > alchemyP2) {
+        if (_user.player == 'p1') {
+          _user.incrementWins();
+        }
+        winner = _user.displayName;
+      } else if (alchemyP1 == alchemyP2) {
+        _user.incrementWins();
+      }else{
+        winner = _user.adversary;
+      }
+
+      AwesomeDialog(
+            context: context,
+            animType: AnimType.SCALE,
+            dialogType: DialogType.INFO,
+            body: Center(child: Text(
+                    winner != '' ? 'Ganó $winner': 'Empate',
+                    style: TextStyle(fontStyle: FontStyle.italic),
+                  ),),
+            title: 'Resultado',
+            desc:   'Resultado de la partida',
+            btnOkOnPress: () {
+              _user.player = '';
+              _user.adversary = '';
+              _userRepository.updateUser();
+              gridState.clearPotions();
+              _signaling.emit('exit-game', true);
+            },
+                 )..show();
+
+      
     }
 
     setState(() {});
@@ -255,10 +310,37 @@ class _GameState extends State<Game> with TickerProviderStateMixin {
       _signaling.emit('changeTurn', {"player": player, "x": x, "y": y});
 
       if (gridState.fullPotions()) {
-        _user.player = '';
-        _user.adversary = '';
-        gridState.clearPotions();
-        _signaling.emit('finish', true);
+        String winner = '';
+
+      if (alchemyP1 > alchemyP2) {
+        if (_user.player == 'p1') {
+          _user.incrementWins();
+        }
+        winner = _user.displayName;
+      } else if (alchemyP1 == alchemyP2) {
+        _user.incrementWins();
+      }else{
+        winner = _user.adversary;
+      }
+
+      AwesomeDialog(
+            context: context,
+            animType: AnimType.SCALE,
+            dialogType: DialogType.INFO,
+            body: Center(child: Text(
+                    winner != '' ? 'Ganó $winner': 'Empate',
+                    style: TextStyle(fontStyle: FontStyle.italic),
+                  ),),
+            title: 'Resultado',
+            desc:   'Resultado de la partida',
+            btnOkOnPress: () {
+              _user.player = '';
+              _user.adversary = '';
+              _userRepository.updateUser();
+              gridState.clearPotions();
+              _signaling.emit('exit-game', true);
+            },
+                 )..show();
       }
     }
 

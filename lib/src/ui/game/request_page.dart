@@ -20,21 +20,28 @@ class _RequestPageState extends State<RequestPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).primaryColor,
+      backgroundColor: Theme.of(context).accentColor,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            ClipRRect(
+            Container(
+            padding: EdgeInsets.all(5),
+            decoration: BoxDecoration(
+                color: Colors.amber,
+                shape: BoxShape.circle,
+                border: Border.all(width: 2)),
+            child: ClipRRect(
               borderRadius: BorderRadius.circular(50),
               child: Image.asset(
-                'pocion.png',
-                width: 100,
+                'assets/pocion.png',
+                width: 120,
               ),
             ),
-            SizedBox(
-              height: 10,
-            ),
+          ),
+          SizedBox(
+            height: 10,
+          ),
             Text(
               _user.adversary,
               style: GoogleFonts.griffy(
@@ -52,7 +59,7 @@ class _RequestPageState extends State<RequestPage> {
                     BlocProvider.of<GameBloc>(context).add(EGame());
                   },
                   backgroundColor: Colors.green,
-                  child: Icon(Icons.photo_filter),
+                  child: Icon(Icons.gamepad),
                 ),
                 SizedBox(width: 80),
                 FloatingActionButton(
