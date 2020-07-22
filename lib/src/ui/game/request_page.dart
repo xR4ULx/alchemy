@@ -1,6 +1,8 @@
 import 'package:alchemy/src/bloc/game_bloc/bloc.dart';
 import 'package:alchemy/src/repository/user_model.dart';
+import 'package:alchemy/src/repository/user_repository.dart';
 import 'package:alchemy/src/util/signaling.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
@@ -16,11 +18,24 @@ class RequestPage extends StatefulWidget {
 class _RequestPageState extends State<RequestPage> {
   Signaling _signaling = GetIt.I.get<Signaling>();
   User _user = GetIt.I.get<User>();
+  UserRepository _userRepository = GetIt.I.get<UserRepository>();
+  String _photoUrl;
+
+  getPhoto() async {
+    _photoUrl = await _userRepository.getPhotoUrl(_user.adversary);
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getPhoto();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).accentColor,
+      backgroundColor: Theme.of(context).primaryColor,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -33,10 +48,11 @@ class _RequestPageState extends State<RequestPage> {
                 border: Border.all(width: 2)),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(50),
-              child: Image.asset(
-                'assets/pocion.png',
-                width: 120,
-              ),
+              child: CachedNetworkImage(
+        imageUrl: _photoUrl,
+        placeholder: (context, url) => CircularProgressIndicator(),
+        errorWidget: (context, url, error) => Icon(Icons.error),
+     ),
             ),
           ),
           SizedBox(
@@ -58,8 +74,8 @@ class _RequestPageState extends State<RequestPage> {
                     _user.player = 'p2';
                     BlocProvider.of<GameBloc>(context).add(EGame());
                   },
-                  backgroundColor: Colors.green,
-                  child: Icon(Icons.gamepad),
+                  backgroundColor: Colors.greenAccent,
+                  child: Icon(Icons.call),
                 ),
                 SizedBox(width: 80),
                 FloatingActionButton(
@@ -67,7 +83,7 @@ class _RequestPageState extends State<RequestPage> {
                     _signaling.emit('finish', true);
                   },
                   backgroundColor: Colors.redAccent,
-                  child: Icon(Icons.cancel),
+                  child: Icon(Icons.call_end),
                 )
               ],
             )

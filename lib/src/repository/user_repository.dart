@@ -48,6 +48,16 @@ class UserRepository {
     }
   }
 
+  Future<String> getPhotoUrl(String playerRequest) async{
+    final QuerySnapshot docs = await Firestore.instance
+        .collection('users')
+        .where('displayName', isEqualTo: playerRequest)
+        .getDocuments();
+    final List<DocumentSnapshot> documents = docs.documents;
+
+    return documents[0]['photoUrl'];
+  }
+
   void updateUser() async{
     final QuerySnapshot docs = await Firestore.instance
         .collection('users')
@@ -81,6 +91,7 @@ class UserRepository {
           .document(followid)
           .updateData({'follows': follows});
     }
+    getAllUsers();
   }
 
   void unfollowTo(String name) async {
@@ -101,6 +112,7 @@ class UserRepository {
           .document(followid)
           .updateData({'follows': follows});
     }
+    getFollows();
   }
 
   void searchUsers(String query) async {

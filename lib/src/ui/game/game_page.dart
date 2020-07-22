@@ -1,3 +1,5 @@
+import 'package:alchemy/src/bloc/game_bloc/bloc.dart';
+import 'package:alchemy/src/bloc/game_bloc/game_event.dart';
 import 'package:alchemy/src/repository/potion_model.dart';
 import 'package:alchemy/src/repository/user_model.dart';
 import 'package:alchemy/src/repository/user_repository.dart';
@@ -7,6 +9,7 @@ import 'package:alchemy/src/util/signaling.dart';
 import 'package:animated_background/animated_background.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -35,7 +38,8 @@ class _GameState extends State<Game> with TickerProviderStateMixin {
   String player;
   int alchemyP1;
   int alchemyP2;
-
+  
+  
   @override
   void dispose() {
     _controller.dispose();
@@ -73,6 +77,31 @@ class _GameState extends State<Game> with TickerProviderStateMixin {
       });
     };
 
+    _signaling.onFinishGame = () {
+
+      AwesomeDialog(
+            context: context,
+            animType: AnimType.SCALE,
+            dialogType: DialogType.INFO,
+            body: Center(
+              child: Text('${_user.adversary} abandono la partida',
+                        style: GoogleFonts.griffy(color: myPrimaryColor),
+                        textScaleFactor: 1.2),
+              ),
+            title: 'Resultado',
+            //desc:   'Resultado de la partida',
+            btnOkOnPress: () {
+              _user.player = '';
+              _user.adversary = '';
+              _userRepository.updateUser();
+              gridState.clearPotions();
+              _user.incrementWins();
+              _signaling.emit('exit-game', true);
+            },
+                 )..show();
+
+    };
+
     super.initState();
   }
 
@@ -108,6 +137,7 @@ class _GameState extends State<Game> with TickerProviderStateMixin {
                 _userRepository.updateUser();
                 gridState.clearPotions();
                 _signaling.emit('finish', true);
+                BlocProvider.of<GameBloc>(context).add(EHome());
               },
               backgroundColor: Colors.redAccent,
               child: Icon(
@@ -268,12 +298,13 @@ class _GameState extends State<Game> with TickerProviderStateMixin {
             context: context,
             animType: AnimType.SCALE,
             dialogType: DialogType.INFO,
-            body: Center(child: Text(
-                    winner != '' ? 'Ganó $winner': 'Empate',
-                    style: TextStyle(fontStyle: FontStyle.italic),
-                  ),),
+            body: Center(child: 
+              Text(winner != '' ? 'Ganó $winner': 'Empate',
+                        style: GoogleFonts.griffy(color: myPrimaryColor),
+                        textScaleFactor: 1.2),
+            ),
             title: 'Resultado',
-            desc:   'Resultado de la partida',
+            //desc:   'Resultado de la partida',
             btnOkOnPress: () {
               _user.player = '';
               _user.adversary = '';
@@ -327,12 +358,13 @@ class _GameState extends State<Game> with TickerProviderStateMixin {
             context: context,
             animType: AnimType.SCALE,
             dialogType: DialogType.INFO,
-            body: Center(child: Text(
-                    winner != '' ? 'Ganó $winner': 'Empate',
-                    style: TextStyle(fontStyle: FontStyle.italic),
-                  ),),
+            body: Center(child: 
+            Text(winner != '' ? 'Ganó $winner': 'Empate',
+                        style: GoogleFonts.griffy(color: myPrimaryColor),
+                        textScaleFactor: 1.2),
+            ),
             title: 'Resultado',
-            desc:   'Resultado de la partida',
+            //desc:   'Resultado de la partida',
             btnOkOnPress: () {
               _user.player = '';
               _user.adversary = '';

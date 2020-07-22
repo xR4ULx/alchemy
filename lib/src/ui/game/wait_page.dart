@@ -1,4 +1,7 @@
+import 'package:alchemy/src/repository/user_model.dart';
+import 'package:alchemy/src/repository/user_repository.dart';
 import 'package:alchemy/src/util/signaling.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -12,11 +15,25 @@ class WaitPage extends StatefulWidget {
 
 class _WaitPageState extends State<WaitPage> {
   Signaling _signaling = GetIt.I.get<Signaling>();
+  User _user = GetIt.I.get<User>();
+  UserRepository _userRepository = GetIt.I.get<UserRepository>();
+  String _photoUrl;
+
+  getPhoto() async {
+    _photoUrl = await _userRepository.getPhotoUrl(_user.adversary);
+    setState(() {});
+  }
+  
+  @override
+  void initState() {
+    super.initState();
+    getPhoto();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).accentColor,
+      backgroundColor: Theme.of(context).primaryColor,
       body: Center(
           child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -29,10 +46,11 @@ class _WaitPageState extends State<WaitPage> {
                 border: Border.all(width: 2)),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(50),
-              child: Image.asset(
-                'assets/pocion.png',
-                width: 120,
-              ),
+              child: CachedNetworkImage(
+        imageUrl: _photoUrl,
+        placeholder: (context, url) => CircularProgressIndicator(),
+        errorWidget: (context, url, error) => Icon(Icons.error),
+     ),
             ),
           ),
           SizedBox(
@@ -52,8 +70,8 @@ class _WaitPageState extends State<WaitPage> {
             onPressed: () {
               _signaling.emit('finish', true);
             },
-            backgroundColor: Colors.deepPurple,
-            child: Icon(Icons.cancel),
+            backgroundColor: Colors.redAccent,
+            child: Icon(Icons.call_end),
           ),
         ],
       )),

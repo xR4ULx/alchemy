@@ -10,6 +10,7 @@ import 'package:alchemy/src/ui/splash_screen.dart';
 import 'package:alchemy/src/util/colors.dart';
 import 'package:alchemy/src/util/signaling.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 
@@ -55,6 +56,7 @@ class _AppState extends State<App> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp,]);
     WidgetsBinding.instance.addObserver(this);
   }
 
@@ -93,6 +95,7 @@ class _AppState extends State<App> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
           primaryColor: myPrimaryColor,
           accentColor: myAccentColor,

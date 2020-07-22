@@ -38,9 +38,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       }
     };
 
-    _signaling.onFinishGame = () {
-      _signaling.emit('exit-game', true);
-    };
+
 
     _signaling.onExitGame = () {
       _user.player = '';

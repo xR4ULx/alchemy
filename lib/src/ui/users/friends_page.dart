@@ -46,9 +46,6 @@ class _FriendsPageState extends State<FriendsPage>
     _particleBehaviour.options = _particleOptions;
   }
 
-  Future<void> unFollow(String name) async {
-    widget._userRepository.unfollowTo(name);
-  }
 
   bool isFollower(List<dynamic> follows) {
     final result = follows.where((item) => item == _user.uid).toList();
@@ -174,11 +171,13 @@ class _FriendsPageState extends State<FriendsPage>
                                                     MainAxisAlignment.start,
                                                 children: <Widget>[
                                                   CupertinoButton(
-                                                      onPressed: () => unFollow(
+                                                      onPressed: () =>{
+                                                        widget._userRepository.unfollowTo(
                                                           snapshot.data
                                                                       .documents[
                                                                   index]
-                                                              ['displayName']),
+                                                              ['displayName'])
+                                                      },
                                                       padding:
                                                           EdgeInsets.all(0),
                                                       child: (isFollower(snapshot

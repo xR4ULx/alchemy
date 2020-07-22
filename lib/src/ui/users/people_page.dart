@@ -42,10 +42,6 @@ class _PeoplePageState extends State<PeoplePage> with TickerProviderStateMixin {
     _particleBehaviour.options = _particleOptions;
   }
 
-  Future<void> follow(String name) async {
-    widget._userRepository.followTo(name);
-  }
-
   bool isFollower(List<dynamic> follows) {
     final result = follows.where((item) => item == _user.uid).toList();
     if (result.length == 0) {
@@ -161,11 +157,13 @@ class _PeoplePageState extends State<PeoplePage> with TickerProviderStateMixin {
                                                     MainAxisAlignment.start,
                                                 children: <Widget>[
                                                   CupertinoButton(
-                                                      onPressed: () => follow(
+                                                      onPressed: () => {
+                                                        widget._userRepository.followTo(
                                                           snapshot.data
                                                                       .documents[
                                                                   index]
-                                                              ['displayName']),
+                                                              ['displayName'])
+                                                      },
                                                       padding:
                                                           EdgeInsets.all(0),
                                                       child: (isFollower(snapshot

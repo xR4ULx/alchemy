@@ -73,11 +73,31 @@ class _UsersPageState extends State<UsersPage> {
         },
         //Will show when SEARCH MODE wasn't active
         mainAppBar: AppBar(
-          title: Text(
-            "4lchemy",
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: <Widget>[
+              Image(
+                  alignment: Alignment.centerLeft,
+                  image: AssetImage("assets/textamber.png"),
+                  width: MediaQuery.of(context).size.width / 6,
+                ),
+          
+          
+              Row(children: <Widget>[
+                Image(
+                      image: AssetImage("assets/p1.png"),
+                      width: 30,
+                    ),
+            Text(
+            "x${_user.wins}",
             style: GoogleFonts.griffy(color: Colors.amber),
-            textScaleFactor: 1.5,
+            textScaleFactor: 1.2,
           ),
+              ],),
+            ],),
+          
+        
           actions: <Widget>[
             InkWell(
               child: Icon(
@@ -102,10 +122,10 @@ class _UsersPageState extends State<UsersPage> {
           decoration: BoxDecoration(
             boxShadow: [
               BoxShadow(
-                offset: const Offset(0.0, .0),
-                blurRadius: 26.0,
-                spreadRadius: 3.2,
-                color: Colors.redAccent,
+                offset: const Offset(0.4, 0.4),
+                blurRadius: 25,
+                spreadRadius: 2,
+                color: myAccentColor,
               )
             ],
           ),
@@ -113,7 +133,7 @@ class _UsersPageState extends State<UsersPage> {
             onPressed: () {
               logOut();
             },
-            backgroundColor: Colors.redAccent,
+            backgroundColor: Colors.amber,
             child: Icon(
               Icons.cloud_off,
               color: Colors.white,
@@ -121,7 +141,7 @@ class _UsersPageState extends State<UsersPage> {
           )),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       bottomNavigationBar: BubbleBottomBar(
-        backgroundColor: Theme.of(context).primaryColor,
+        backgroundColor: myPrimaryColor,
         hasNotch: true,
         fabLocation: BubbleBottomBarFabLocation.end,
         opacity: .2,
@@ -129,38 +149,38 @@ class _UsersPageState extends State<UsersPage> {
         onTap: changePage,
         borderRadius: BorderRadius.vertical(
             top: Radius.circular(
-                16)), //border radius doesn't work when the notch is enabled.
-        elevation: 8,
+                15)), //border radius doesn't work when the notch is enabled.
+        elevation: 3,
         items: <BubbleBottomBarItem>[
           BubbleBottomBarItem(
-              backgroundColor: Colors.amber,
+              backgroundColor: Colors.transparent,
               icon: Icon(
                 Icons.home,
-                color: Colors.amber,
+                color: Colors.amberAccent,
               ),
               activeIcon: Icon(
                 Icons.home,
-                color: Colors.amber,
+                color: Colors.amberAccent
               ),
               title: Text(
                 "Home",
                 style: GoogleFonts.griffy(color: Colors.amber),
-                textScaleFactor: 1.1,
+                textScaleFactor: 1.5,
               )),
           BubbleBottomBarItem(
-              backgroundColor: Colors.redAccent,
+              backgroundColor: Colors.transparent,
               icon: Icon(
-                Icons.favorite,
-                color: Colors.redAccent,
+                Icons.supervised_user_circle,
+                color: Colors.amber,
               ),
               activeIcon: Icon(
-                Icons.favorite_border,
-                color: Colors.redAccent,
+                Icons.supervised_user_circle,
+                color: Colors.amber,
               ),
               title: Text(
-                "Favorite",
-                style: GoogleFonts.griffy(color: Colors.redAccent),
-                textScaleFactor: 1.1,
+                "Friends",
+                style: GoogleFonts.griffy(color: Colors.amber),
+                textScaleFactor: 1.5,
               )),
         ],
       ),
