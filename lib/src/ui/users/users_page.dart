@@ -90,7 +90,7 @@ class _UsersPageState extends State<UsersPage> {
                       width: 30,
                     ),
             Text(
-            "x${_user.wins}",
+            _user.wins == null ? "x0" : "x${_user.wins}",
             style: GoogleFonts.griffy(color: Colors.amber),
             textScaleFactor: 1.2,
           ),

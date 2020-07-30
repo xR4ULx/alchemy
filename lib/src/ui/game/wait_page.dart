@@ -1,8 +1,10 @@
+import 'package:alchemy/src/bloc/game_bloc/bloc.dart';
 import 'package:alchemy/src/repository/user_model.dart';
 import 'package:alchemy/src/repository/user_repository.dart';
 import 'package:alchemy/src/util/signaling.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -28,6 +30,16 @@ class _WaitPageState extends State<WaitPage> {
   void initState() {
     super.initState();
     getPhoto();
+
+    _signaling.onFinishGame = () {
+
+      _user.player = '';
+      _user.adversary = '';
+      _userRepository.updateUser();
+      _signaling.emit('exit-game', true);
+
+    };
+
   }
 
   @override
@@ -68,7 +80,11 @@ class _WaitPageState extends State<WaitPage> {
           ),
           FloatingActionButton(
             onPressed: () {
-              _signaling.emit('finish', true);
+              _user.player = '';
+                _user.adversary = '';
+                _userRepository.updateUser();
+                _signaling.emit('finish', true);
+                BlocProvider.of<GameBloc>(context).add(EHome());
             },
             backgroundColor: Colors.redAccent,
             child: Icon(Icons.call_end),

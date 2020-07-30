@@ -277,21 +277,35 @@ class _GameState extends State<Game> with TickerProviderStateMixin {
 
     CheckWin check = new CheckWin(player, gridState, _colorAnimation);
     await check.comprobarWin();
-    alchemyP2 = check.winsPlayer;
+    if(_user.player == 'p1'){
+        alchemyP2 = check.winsPlayer;
+    }else{
+        alchemyP1 = check.winsPlayer;
+    }
 
     if (gridState.fullPotions()) {
       
       String winner = '';
 
       if (alchemyP1 > alchemyP2) {
+        //GANA P1
         if (_user.player == 'p1') {
           _user.incrementWins();
+          winner = _user.displayName;
+        }else{
+          winner = _user.adversary;
         }
-        winner = _user.displayName;
+        
       } else if (alchemyP1 == alchemyP2) {
         _user.incrementWins();
       }else{
-        winner = _user.adversary;
+        // GANA P2
+        if(_user.player == 'p1'){
+          winner = _user.adversary;
+        }else{
+          winner = _user.displayName;
+        }
+
       }
 
       AwesomeDialog(
@@ -335,7 +349,12 @@ class _GameState extends State<Game> with TickerProviderStateMixin {
       if (antPlayer != null) {
         CheckWin check = new CheckWin(antPlayer, gridState, _colorAnimation);
         await check.comprobarWin();
-        alchemyP1 = check.winsPlayer;
+        if(_user.player == 'p1'){
+          alchemyP1 = check.winsPlayer;
+        }else{
+          alchemyP2 = check.winsPlayer;
+        }
+        
       }
 
       _signaling.emit('changeTurn', {"player": player, "x": x, "y": y});
@@ -344,14 +363,23 @@ class _GameState extends State<Game> with TickerProviderStateMixin {
         String winner = '';
 
       if (alchemyP1 > alchemyP2) {
+        //GANA P1
         if (_user.player == 'p1') {
           _user.incrementWins();
+          winner = _user.displayName;
+        }else{
+          winner = _user.adversary;
         }
-        winner = _user.displayName;
+        
       } else if (alchemyP1 == alchemyP2) {
         _user.incrementWins();
       }else{
-        winner = _user.adversary;
+        // GANA P2
+        if(_user.player == 'p1'){
+          winner = _user.adversary;
+        }else{
+          winner = _user.displayName;
+        }
       }
 
       AwesomeDialog(
