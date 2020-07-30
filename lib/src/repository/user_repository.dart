@@ -174,7 +174,7 @@ class UserRepository {
           _user.uid = _firebaseUser.uid;
           _user.player = '';
           _user.adversary = '';
-          _user.follows = [];
+          _user.follows = [""];
           _user.wins = 0;
           _user.isActive = true;
 
