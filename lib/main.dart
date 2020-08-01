@@ -8,6 +8,7 @@ import 'package:alchemy/src/ui/login/login_screen.dart';
 import 'package:alchemy/src/ui/root_page.dart';
 import 'package:alchemy/src/ui/splash_screen.dart';
 import 'package:alchemy/src/util/colors.dart';
+import 'package:alchemy/src/util/notifications.dart';
 import 'package:alchemy/src/util/signaling.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -20,6 +21,7 @@ void setupSingletons() async {
   getIt.registerLazySingleton<User>(() => User());
   getIt.registerLazySingleton<Signaling>(() => Signaling());
   getIt.registerLazySingleton<UserRepository>(() => UserRepository());
+  getIt.registerLazySingleton<Notifications>(() => Notifications());
 }
 
 void main() {

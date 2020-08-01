@@ -1,3 +1,4 @@
+import 'package:flutter_incall_manager/incall.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 typedef OnConnected();
@@ -20,6 +21,7 @@ class Signaling {
   OnCancelRequest onCancelRequest;
   OnFinishGame onFinishGame;
   OnExitGame onExitGame;
+  IncallManager _incallManager = IncallManager();
 
   //IncallManager _incallManager = IncallManager();
 
@@ -40,16 +42,20 @@ class Signaling {
     });
 
     _socket.on('on-request', (player1) {
-      //_incallManager.start(media: MediaType.AUDIO, auto: false, ringback: '_DEFAULT_');
+      _incallManager.startRingtone('DEFAULT', 'default', 10);
       onRequest(player1);
     });
 
     _socket.on('on-cancel-request', (value) {
+      _incallManager.stopRingtone();
       onCancelRequest();
     });
 
     _socket.on('on-response', (response) {
-      //_incallManager.setForceSpeakerphoneOn(flag: ForceSpeakerType.FORCE_ON);
+      if(response){
+      _incallManager.start();
+      _incallManager.setForceSpeakerphoneOn(flag: ForceSpeakerType.FORCE_ON);
+      }
       onResponse(response);
     });
 
@@ -58,6 +64,7 @@ class Signaling {
     });
 
     _socket.on('on-finish', (data) {
+      _incallManager.stop();
       onFinishGame();
     });
 
@@ -67,11 +74,11 @@ class Signaling {
   }
 
   acceptOrDecline(bool accept, String adversary) async {
-    //_incallManager.stopRingtone();
+    _incallManager.stopRingtone();
     if (accept) {
+      _incallManager.start();
+      _incallManager.setForceSpeakerphoneOn(flag: ForceSpeakerType.FORCE_ON);
       emit('response', {"displayName": adversary, "accept": true});
-      //_incallManager.start();
-      //_incallManager.setForceSpeakerphoneOn(flag: ForceSpeakerType.FORCE_ON);
     } else {
       emit('response', {"displayName": adversary, "accept": false});
     }
@@ -82,6 +89,7 @@ class Signaling {
   }
 
   dispose() {
+    _incallManager.stop();
     _socket?.disconnect();
     _socket?.destroy();
     _socket = null;

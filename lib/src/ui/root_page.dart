@@ -5,6 +5,7 @@ import 'package:alchemy/src/ui/game/game_page.dart';
 import 'package:alchemy/src/ui/game/request_page.dart';
 import 'package:alchemy/src/ui/game/wait_page.dart';
 import 'package:alchemy/src/ui/users/users_page.dart';
+import 'package:alchemy/src/util/notifications.dart';
 import 'package:alchemy/src/util/signaling.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -26,12 +27,13 @@ class RootPage extends StatefulWidget {
 
 class _RootPageState extends State<RootPage> {
   
-  User _user = GetIt.I.get<User>();
-  
+  Notifications _notifications = GetIt.I.get<Notifications>();
   
   @override
   void initState() {
     super.initState();
+    _notifications.registerNotification();
+    _notifications.configLocalNotification();
   }
 
   @override

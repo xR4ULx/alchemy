@@ -7,10 +7,13 @@ import 'package:alchemy/src/util/colors.dart';
 import 'package:alchemy/src/util/signaling.dart';
 import 'package:animated_background/animated_background.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:alchemy/src/providers/messages_provider.dart';
+import 'package:alchemy/src/repository/message_model.dart';
 
 //Mis Widgets
 import 'package:alchemy/src/ui/widgets/active_widget.dart';
@@ -31,6 +34,8 @@ class PeoplePage extends StatefulWidget {
 }
 
 class _PeoplePageState extends State<PeoplePage> with TickerProviderStateMixin {
+
+  MessagesProvider messagesProvider;
   User _user = GetIt.I.get<User>();
   Signaling _signaling = GetIt.I.get<Signaling>();
   RandomParticleBehaviour _particleBehaviour = new RandomParticleBehaviour();
@@ -44,6 +49,7 @@ class _PeoplePageState extends State<PeoplePage> with TickerProviderStateMixin {
     _user.player = '';
     _user.adversary = '';
     _particleBehaviour.options = _particleOptions;
+    messagesProvider = new MessagesProvider();
   }
 
   bool isFollower(List<dynamic> follows) {
@@ -251,10 +257,38 @@ class _PeoplePageState extends State<PeoplePage> with TickerProviderStateMixin {
                                                                   )
                                                                 ],
                                                               ))
-                                                      : Container(
-                                                          width: 0.0,
-                                                          height: 0.0,
-                                                        ),
+                                                      : RaisedButton(
+                                                              shape: RoundedRectangleBorder(
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              18.0),
+                                                                  side: BorderSide(
+                                                                      color: Colors
+                                                                          .blue)),
+                                                              onPressed: () {
+                                                                Message msg = new Message(
+                                                                    idFrom: _user.uid,
+                                                                    idTo: snapshot
+                                                                          .data
+                                                                          .documents[index]['uid'],
+                                                                    timestamp: DateTime.now().millisecondsSinceEpoch.toString(),
+                                                                    content: '¿Quieres jugar?',
+                                                                    type: 0
+                                                                );
+
+                                                                messagesProvider.sendMessage(msg);
+                                            
+                                                              },
+                                                              color: Colors.blue,
+                                                              textColor:
+                                                                  Colors.white,
+                                                              child: Text(
+                                                                  "Avisar",
+                                                                  style: TextStyle(
+                                                                      fontSize:
+                                                                          12)),
+                                                            ),
                                                 ],
                                               ),
                                             ),
