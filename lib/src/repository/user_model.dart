@@ -29,6 +29,7 @@ class User {
   bool isActive;
   int wins;
   List<dynamic> follows;
+  List<dynamic> avisos;
 
   _createIndexes(String name) {
     List<String> _indexes = [""];
@@ -57,6 +58,7 @@ class User {
     isActive = json["isActive"];
     wins = json["wins"];
     follows = json["follows"];
+    avisos = json["avisos"];
   }
 
   Map<String, dynamic> toJson() => {
@@ -69,5 +71,6 @@ class User {
         "wins": wins,
         "indexes": _createIndexes(displayName),
         "follows": follows,
+        "avisos": avisos,
       };
 }

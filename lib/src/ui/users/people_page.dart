@@ -48,6 +48,8 @@ class _PeoplePageState extends State<PeoplePage> with TickerProviderStateMixin {
     widget._userRepository.getAllUsers();
     _user.player = '';
     _user.adversary = '';
+    _user.avisos = [""];
+    widget._userRepository.updateUser();
     _particleBehaviour.options = _particleOptions;
     messagesProvider = new MessagesProvider();
   }
@@ -60,6 +62,15 @@ class _PeoplePageState extends State<PeoplePage> with TickerProviderStateMixin {
       return true;
     }
   }
+
+  bool isAvisar(List<dynamic> avisos){
+    final result = avisos.where((item) => item == _user.uid).toList();
+    if (result.length == 0) {
+      return true;
+    } else {
+      return false;
+    }
+  } 
 
   @override
   Widget build(BuildContext context) {
@@ -257,7 +268,9 @@ class _PeoplePageState extends State<PeoplePage> with TickerProviderStateMixin {
                                                                   )
                                                                 ],
                                                               ))
-                                                      : RaisedButton(
+                                                      : isAvisar(snapshot
+                                                        .data.documents[index]
+                                                    ['avisos'])?RaisedButton(
                                                               shape: RoundedRectangleBorder(
                                                                   borderRadius:
                                                                       BorderRadius
@@ -278,6 +291,10 @@ class _PeoplePageState extends State<PeoplePage> with TickerProviderStateMixin {
                                                                 );
 
                                                                 messagesProvider.sendMessage(msg);
+
+                                                                 widget._userRepository.avisar(
+                                                snapshot.data.documents[index]
+                                                    ['displayName']);
                                             
                                                               },
                                                               color: Colors.blue,
@@ -288,7 +305,7 @@ class _PeoplePageState extends State<PeoplePage> with TickerProviderStateMixin {
                                                                   style: TextStyle(
                                                                       fontSize:
                                                                           12)),
-                                                            ),
+                                                            ):Container(),
                                                 ],
                                               ),
                                             ),

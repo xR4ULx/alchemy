@@ -72,7 +72,7 @@ class UserRepository {
     Firestore.instance
           .collection('users')
           .document(_userid)
-          .updateData({'player': _user.player, 'adversary': _user.adversary});
+          .updateData({'player': _user.player, 'adversary': _user.adversary, 'avisos': _user.avisos});
   }
 
   void followTo(String name) async {
@@ -113,6 +113,27 @@ class UserRepository {
           .collection('users')
           .document(followid)
           .updateData({'follows': follows});
+    }
+    getAllUsers();
+  }
+
+    void avisar(String name) async {
+    final QuerySnapshot docs = await Firestore.instance
+        .collection('users')
+        .where('displayName', isEqualTo: name)
+        .getDocuments();
+    final List<DocumentSnapshot> documents = docs.documents;
+
+    String avisoid = documents[0]['uid'];
+    List<dynamic> avisos = documents[0]['avisos'];
+    final result = avisos.where((item) => item == _user.uid).toList();
+    if (result.length == 0) {
+      avisos.add(_user.uid);
+
+      Firestore.instance
+          .collection('users')
+          .document(avisoid)
+          .updateData({'avisos': avisos});
     }
     getAllUsers();
   }
@@ -179,6 +200,7 @@ class UserRepository {
           _user.player = '';
           _user.adversary = '';
           _user.follows = [""];
+          _user.avisos = [""];
           _user.wins = 0;
           _user.isActive = true;
 
@@ -201,6 +223,7 @@ class UserRepository {
           _user.wins = documents[0]['wins'];
           _user.isActive = documents[0]['isActive'];
           _user.follows = documents[0]['follows'];
+          _user.avisos = [""];
         }
       }
     } else {

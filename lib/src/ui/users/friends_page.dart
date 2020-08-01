@@ -2,6 +2,8 @@ import 'dart:ui';
 import 'package:alchemy/src/bloc/game_bloc/bloc.dart';
 import 'package:alchemy/src/bloc/game_bloc/game_bloc.dart';
 import 'package:alchemy/src/bloc/authentication_bloc/bloc.dart';
+import 'package:alchemy/src/providers/messages_provider.dart';
+import 'package:alchemy/src/repository/message_model.dart';
 import 'package:alchemy/src/repository/user_model.dart';
 import 'package:alchemy/src/repository/user_repository.dart';
 import 'package:alchemy/src/util/colors.dart';
@@ -34,6 +36,8 @@ class FriendsPage extends StatefulWidget {
 
 class _FriendsPageState extends State<FriendsPage>
     with TickerProviderStateMixin {
+
+      MessagesProvider messagesProvider;
   User _user = GetIt.I.get<User>();
   Signaling _signaling = GetIt.I.get<Signaling>();
   final AppBarController appBarController = AppBarController();
@@ -47,7 +51,10 @@ class _FriendsPageState extends State<FriendsPage>
     widget._userRepository.getFollows();
     _user.player = '';
     _user.adversary = '';
+    _user.avisos = [""];
+    widget._userRepository.updateUser();
     _particleBehaviour.options = _particleOptions;
+    messagesProvider = new MessagesProvider();
   }
 
 
@@ -59,6 +66,15 @@ class _FriendsPageState extends State<FriendsPage>
       return false;
     }
   }
+
+  bool isAvisar(List<dynamic> avisos){
+    final result = avisos.where((item) => item == _user.uid).toList();
+    if (result.length == 0) {
+      return true;
+    } else {
+      return false;
+    }
+  } 
 
   void logOut() {
     _signaling.emit('logout', _user.displayName);
@@ -258,10 +274,43 @@ class _FriendsPageState extends State<FriendsPage>
                                                               ],
                                                             ))
                                           
-                                                      : Container(
-                                                          width: 0.0,
-                                                          height: 0.0,
-                                                        ),
+                                                      : isAvisar(snapshot
+                                                        .data.documents[index]
+                                                    ['avisos'])? RaisedButton(
+                                                              shape: RoundedRectangleBorder(
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              18.0),
+                                                                  side: BorderSide(
+                                                                      color: Colors
+                                                                          .blue)),
+                                                              onPressed: () {
+                                                                Message msg = new Message(
+                                                                    idFrom: _user.uid,
+                                                                    idTo: snapshot
+                                                                          .data
+                                                                          .documents[index]['uid'],
+                                                                    timestamp: DateTime.now().millisecondsSinceEpoch.toString(),
+                                                                    content: '¿Quieres jugar?',
+                                                                    type: 0
+                                                                );
+
+                                                                messagesProvider.sendMessage(msg);
+
+                                                                widget._userRepository.avisar(
+                                                snapshot.data.documents[index]
+                                                    ['displayName']);
+                                                              },
+                                                              color: Colors.blue,
+                                                              textColor:
+                                                                  Colors.white,
+                                                              child: Text(
+                                                                  "Avisar",
+                                                                  style: TextStyle(
+                                                                      fontSize:
+                                                                          12)),
+                                                            ): Container(),
                                                 ],
                                               ),
                                             ),
