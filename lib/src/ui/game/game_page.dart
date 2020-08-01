@@ -158,24 +158,18 @@ class _GameState extends State<Game> with TickerProviderStateMixin {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            SafeArea(
-                child: SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.005)),
+            SafeArea(child: SizedBox(),),
             Text(
               _user.player == player
                   ? 'Turno de ${_user.displayName}'
                   : 'Turno de ${_user.adversary}',
-              style: GoogleFonts.griffy(color: Colors.white, shadows: [
-                Shadow(offset: Offset(-1.5, -1.5), color: myAccentColor)
-              ]),
-              textScaleFactor: 1.8,
-              textAlign: TextAlign.start,
+              style: GoogleFonts.griffy(color: Colors.white),
+              textScaleFactor: 2,
+              textAlign: TextAlign.center,
             ),
             AspectRatio(
-              aspectRatio: 0.93,
+              aspectRatio: 0.8,
               child: Container(
-                padding: EdgeInsets.all(4.0),
-                margin: EdgeInsets.all(4.0),
                 child: GridView.builder(
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: gridStateLength,
@@ -228,7 +222,7 @@ class _GameState extends State<Game> with TickerProviderStateMixin {
               ],
             ),
             SizedBox(
-              height: 20,
+              height: 2,
             )
           ]),
     );

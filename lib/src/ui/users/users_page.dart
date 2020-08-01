@@ -79,6 +79,7 @@ class _UsersPageState extends State<UsersPage> {
             children: <Widget>[
               Image(
                   alignment: Alignment.centerLeft,
+                  color: Colors.white,
                   image: AssetImage("assets/textamber.png"),
                   width: MediaQuery.of(context).size.width / 6,
                 ),
@@ -91,7 +92,7 @@ class _UsersPageState extends State<UsersPage> {
                     ),
             Text(
             _user.wins == null ? "x0" : "x${_user.wins}",
-            style: GoogleFonts.griffy(color: Colors.amber),
+            style: GoogleFonts.griffy(color: Colors.white),
             textScaleFactor: 1.2,
           ),
               ],),
@@ -133,9 +134,9 @@ class _UsersPageState extends State<UsersPage> {
             onPressed: () {
               logOut();
             },
-            backgroundColor: Colors.amber,
+            backgroundColor: Theme.of(context).primaryColor,
             child: Icon(
-              Icons.cloud_off,
+              Icons.exit_to_app,
               color: Colors.white,
             ),
           )),
@@ -156,31 +157,31 @@ class _UsersPageState extends State<UsersPage> {
               backgroundColor: Colors.transparent,
               icon: Icon(
                 Icons.home,
-                color: Colors.amberAccent,
+                color: Colors.white,
               ),
               activeIcon: Icon(
                 Icons.home,
-                color: Colors.amberAccent
+                color: Colors.white
               ),
               title: Text(
                 "Home",
-                style: GoogleFonts.griffy(color: Colors.amber),
-                textScaleFactor: 1.5,
+                style: GoogleFonts.openSans(color: Colors.white),
+                textScaleFactor: 1.2,
               )),
           BubbleBottomBarItem(
               backgroundColor: Colors.transparent,
               icon: Icon(
                 Icons.supervised_user_circle,
-                color: Colors.amber,
+                color: Colors.tealAccent,
               ),
               activeIcon: Icon(
                 Icons.supervised_user_circle,
-                color: Colors.amber,
+                color: Colors.tealAccent,
               ),
               title: Text(
                 "Friends",
-                style: GoogleFonts.griffy(color: Colors.amber),
-                textScaleFactor: 1.5,
+                style: GoogleFonts.openSans(color: Colors.tealAccent),
+                textScaleFactor: 1.2,
               )),
         ],
       ),

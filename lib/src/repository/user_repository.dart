@@ -1,6 +1,7 @@
 // Imports
 import 'dart:async';
 import 'package:alchemy/src/repository/user_model.dart';
+import 'package:alchemy/src/util/signaling.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get_it/get_it.dart';
@@ -13,6 +14,7 @@ class UserRepository {
   final GoogleSignIn _googleSignIn;
   //FirebaseUser _firebaseUser;
   User _user = GetIt.I.get<User>();
+  Signaling _signaling = GetIt.I.get<Signaling>();
 
   //PROVIDER
   QuerySnapshot users;
@@ -112,7 +114,7 @@ class UserRepository {
           .document(followid)
           .updateData({'follows': follows});
     }
-    getFollows();
+    getAllUsers();
   }
 
   void searchUsers(String query) async {
@@ -167,6 +169,8 @@ class UserRepository {
             .where('uid', isEqualTo: _firebaseUser.uid)
             .getDocuments();
         final List<DocumentSnapshot> documents = result.documents;
+
+        _signaling.emit('login', _firebaseUser.displayName);
 
         if (documents.length == 0) {
           _user.displayName = _firebaseUser.displayName;

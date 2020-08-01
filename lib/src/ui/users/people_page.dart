@@ -12,6 +12,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+//Mis Widgets
+import 'package:alchemy/src/ui/widgets/active_widget.dart';
+import 'package:alchemy/src/ui/widgets/avatar_widget.dart';
+
 class PeoplePage extends StatefulWidget {
   final String name;
   final UserRepository _userRepository;
@@ -45,9 +49,9 @@ class _PeoplePageState extends State<PeoplePage> with TickerProviderStateMixin {
   bool isFollower(List<dynamic> follows) {
     final result = follows.where((item) => item == _user.uid).toList();
     if (result.length == 0) {
-      return true;
-    } else {
       return false;
+    } else {
+      return true;
     }
   }
 
@@ -73,7 +77,7 @@ class _PeoplePageState extends State<PeoplePage> with TickerProviderStateMixin {
                     );
                   } else {
                     return ListView.builder(
-                      padding: EdgeInsets.all(7.0),
+                      padding: EdgeInsets.all(1.0),
                       itemBuilder: (context, index) => (snapshot
                                   .data.documents[index]['uid'] ==
                               _user.uid)
@@ -87,11 +91,14 @@ class _PeoplePageState extends State<PeoplePage> with TickerProviderStateMixin {
                                     decoration: BoxDecoration(
                                       boxShadow: [
                                         BoxShadow(
-                                          offset: const Offset(0.0, .0),
-                                          blurRadius: 26.0,
-                                          spreadRadius: 0.2,
-                                          color: myAccentColor,
-                                        )
+                                            offset: const Offset(0.0, .0),
+                                            blurRadius: 26.0,
+                                            spreadRadius: 0.2,
+                                            color: isFollower(snapshot
+                                                        .data.documents[index]
+                                                    ['follows'])
+                                                ? Colors.tealAccent
+                                                : Colors.transparent)
                                       ],
                                     ),
                                     child: FlatButton(
@@ -99,7 +106,7 @@ class _PeoplePageState extends State<PeoplePage> with TickerProviderStateMixin {
                                           borderRadius:
                                               new BorderRadius.circular(10.0)),
                                       padding: EdgeInsets.all(10),
-                                      color: Colors.white,
+                                      color: Colors.transparent,
                                       child: Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
@@ -109,43 +116,14 @@ class _PeoplePageState extends State<PeoplePage> with TickerProviderStateMixin {
                                           Stack(
                                             alignment: Alignment.bottomLeft,
                                             children: <Widget>[
-                                              Container(
-                                                decoration: BoxDecoration(
-                                                    color: myAccentColor,
-                                                    shape: BoxShape.circle),
-                                                padding: EdgeInsets.all(1),
-                                                child: ClipRRect(
-                                                  borderRadius:
-                                                      BorderRadius.circular(25),
-                                                  child: Image.network(
-                                                    snapshot.data
-                                                            .documents[index]
-                                                        ['photoUrl'],
-                                                    width: 45,
-                                                  ),
-                                                ),
-                                              ),
-                                              snapshot.data.documents[index]
-                                                      ['isActive']
-                                                  ? Container(
-                                                      decoration: BoxDecoration(
-                                                          color: myAccentColor,
-                                                          shape:
-                                                              BoxShape.circle),
-                                                      padding:
-                                                          EdgeInsets.all(1),
-                                                      child: Container(
-                                                        decoration:
-                                                            BoxDecoration(
-                                                                color: Colors
-                                                                    .greenAccent,
-                                                                shape: BoxShape
-                                                                    .circle),
-                                                        width: 25 / 2,
-                                                        height: 25 / 2,
-                                                      ),
-                                                    )
-                                                  : SizedBox.shrink(),
+                                              AvatarWidget(
+                                                  photoUrl: snapshot
+                                                          .data.documents[index]
+                                                      ['photoUrl']),
+                                              ActiveWidget(
+                                                  active: snapshot
+                                                          .data.documents[index]
+                                                      ['isActive'])
                                             ],
                                           ),
                                           Expanded(
@@ -156,38 +134,7 @@ class _PeoplePageState extends State<PeoplePage> with TickerProviderStateMixin {
                                                 mainAxisAlignment:
                                                     MainAxisAlignment.start,
                                                 children: <Widget>[
-                                                  CupertinoButton(
-                                                      onPressed: () => {
-                                                        widget._userRepository.followTo(
-                                                          snapshot.data
-                                                                      .documents[
-                                                                  index]
-                                                              ['displayName'])
-                                                      },
-                                                      padding:
-                                                          EdgeInsets.all(0),
-                                                      child: (isFollower(snapshot
-                                                                  .data
-                                                                  .documents[
-                                                              index]['follows']))
-                                                          ? Icon(
-                                                              Icons
-                                                                  .add_circle_outline,
-                                                              color:
-                                                                  Colors.green,
-                                                              size: 30,
-                                                            )
-                                                            :SizedBox(
-                                                              width: 0,
-                                                              height: 0,
-                                                            ))
-                                                          ,
-                                                  SizedBox(
-                                                              width: 10,
-                                                              height: 0,
-                                                            ),
                                                   Column(
-
                                                     mainAxisAlignment:
                                                         MainAxisAlignment.end,
                                                     crossAxisAlignment:
@@ -198,58 +145,77 @@ class _PeoplePageState extends State<PeoplePage> with TickerProviderStateMixin {
                                                         snapshot.data.documents[
                                                                 index]
                                                             ['displayName'],
-                                                        style: GoogleFonts.griffy(
-                                                            color:
-                                                                myPrimaryColor,
-                                                            fontSize: 18),
+                                                        style: GoogleFonts
+                                                            .openSans(),
                                                       ),
                                                       Text(
                                                         'Potions: ${snapshot.data.documents[index]['wins']}',
-                                                        style:
-                                                            GoogleFonts.griffy(
-                                                                color: Colors.blue,
-                                                                fontSize: 16),
+                                                        style: GoogleFonts
+                                                            .openSans(),
                                                       )
                                                     ],
                                                   ),
                                                   Expanded(
-                                                    child: Column(
+                                                      child: Column(
                                                     mainAxisAlignment:
-                                                    MainAxisAlignment.end,
+                                                        MainAxisAlignment.end,
                                                     children: <Widget>[
-                                                    SizedBox(
-                                                    width: 40,
-                                                  ),
-                                                  ],)),
+                                                      SizedBox(
+                                                        width: 40,
+                                                      ),
+                                                    ],
+                                                  )),
                                                   snapshot.data.documents[index]
                                                           ['isActive']
                                                       ? snapshot.data.documents[
                                                                       index]
                                                                   ['player'] ==
                                                               ''
-                                                          ? Container(
-                                                              decoration:
-                                                                  BoxDecoration(
-                                                                boxShadow: [
-                                                                  BoxShadow(
-                                                                    offset:
-                                                                        const Offset(
-                                                                            0.0,
-                                                                            .0),
-                                                                    blurRadius:
-                                                                        26.0,
-                                                                    spreadRadius:
-                                                                        0.2,
-                                                                    color: Colors
-                                                                        .blue,
-                                                                  )
-                                                                ],
-                                                              ),
-                                                              child: Image(
-                                                                image: AssetImage(
-                                                                    "assets/boton-de-play.png"),
-                                                                width: 45,
-                                                              ))
+                                                          ? RaisedButton(
+                                                              shape: RoundedRectangleBorder(
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              18.0),
+                                                                  side: BorderSide(
+                                                                      color: Colors
+                                                                          .red)),
+                                                              onPressed: () {
+                                                                if (snapshot.data
+                                                                            .documents[index]
+                                                                        [
+                                                                        'isActive'] &&
+                                                                    snapshot.data.documents[index]
+                                                                            [
+                                                                            'player'] ==
+                                                                        '') {
+                                                                  _user
+                                                                      .adversary = snapshot
+                                                                          .data
+                                                                          .documents[index]
+                                                                      [
+                                                                      'displayName'];
+                                                                  _signaling.emit(
+                                                                      'request',
+                                                                      snapshot
+                                                                          .data
+                                                                          .documents[index]['displayName']);
+                                                                  BlocProvider.of<
+                                                                              GameBloc>(
+                                                                          context)
+                                                                      .add(
+                                                                          EWait());
+                                                                }
+                                                              },
+                                                              color: Colors.red,
+                                                              textColor:
+                                                                  Colors.white,
+                                                              child: Text(
+                                                                  "Invitar",
+                                                                  style: TextStyle(
+                                                                      fontSize:
+                                                                          12)),
+                                                            )
                                                           : Container(
                                                               decoration:
                                                                   BoxDecoration(
@@ -269,22 +235,22 @@ class _PeoplePageState extends State<PeoplePage> with TickerProviderStateMixin {
                                                                 ],
                                                               ),
                                                               child: Column(
-                                                              children: <
-                                                                  Widget>[
-                                                                Image(
-                                                                  image: AssetImage(
-                                                                      "assets/magia.png"),
-                                                                  width: 45,
-                                                                ),
-                                                                Text(
-                                                                  'Ocupado',
-                                                                  style: GoogleFonts
-                                                                      .griffy(),
-                                                                  textScaleFactor:
-                                                                      1,
-                                                                )
-                                                              ],
-                                                            ))
+                                                                children: <
+                                                                    Widget>[
+                                                                  Image(
+                                                                    image: AssetImage(
+                                                                        "assets/magia.png"),
+                                                                    width: 45,
+                                                                  ),
+                                                                  Text(
+                                                                    'Ocupado',
+                                                                    style: GoogleFonts
+                                                                        .griffy(),
+                                                                    textScaleFactor:
+                                                                        1,
+                                                                  )
+                                                                ],
+                                                              ))
                                                       : Container(
                                                           width: 0.0,
                                                           height: 0.0,
@@ -295,21 +261,16 @@ class _PeoplePageState extends State<PeoplePage> with TickerProviderStateMixin {
                                           ),
                                         ],
                                       ),
-                                      onPressed: () {
-                                        if (snapshot.data.documents[index]
-                                                ['isActive'] &&
-                                            snapshot.data.documents[index]
-                                                    ['player'] ==
-                                                '') {
-                                          _user.adversary = snapshot.data
-                                              .documents[index]['displayName'];
-                                          _signaling.emit(
-                                              'request',
-                                              snapshot.data.documents[index]
-                                                  ['displayName']);
-                                          BlocProvider.of<GameBloc>(context)
-                                              .add(EWait());
-                                        }
+                                      onPressed: () {},
+                                      onLongPress: () {
+                                        isFollower(snapshot.data
+                                                .documents[index]['follows'])
+                                            ? widget._userRepository.unfollowTo(
+                                                snapshot.data.documents[index]
+                                                    ['displayName'])
+                                            : widget._userRepository.followTo(
+                                                snapshot.data.documents[index]
+                                                    ['displayName']);
                                       },
                                     ),
                                   ),

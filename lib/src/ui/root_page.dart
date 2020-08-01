@@ -1,11 +1,14 @@
 import 'package:alchemy/src/bloc/game_bloc/bloc.dart';
+import 'package:alchemy/src/repository/user_model.dart';
 import 'package:alchemy/src/repository/user_repository.dart';
 import 'package:alchemy/src/ui/game/game_page.dart';
 import 'package:alchemy/src/ui/game/request_page.dart';
 import 'package:alchemy/src/ui/game/wait_page.dart';
 import 'package:alchemy/src/ui/users/users_page.dart';
+import 'package:alchemy/src/util/signaling.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 
 class RootPage extends StatefulWidget {
   final String name;
@@ -22,6 +25,10 @@ class RootPage extends StatefulWidget {
 }
 
 class _RootPageState extends State<RootPage> {
+  
+  User _user = GetIt.I.get<User>();
+  
+  
   @override
   void initState() {
     super.initState();

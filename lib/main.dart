@@ -51,7 +51,6 @@ class App extends StatefulWidget {
 
 class _AppState extends State<App> with WidgetsBindingObserver {
   User _user = GetIt.I.get<User>();
-  Signaling _signaling = GetIt.I.get<Signaling>();
 
   @override
   void initState() {
@@ -106,7 +105,6 @@ class _AppState extends State<App> with WidgetsBindingObserver {
             return SplashScreen();
           }
           if (state is Authenticated) {
-            _signaling.emit('login', _user.displayName);
             return RootPage(
                 name: state.displayName,
                 userRepository: widget._userRepository);
