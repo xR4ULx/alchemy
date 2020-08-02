@@ -1,11 +1,8 @@
-import 'package:alchemy/src/repository/user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:get_it/get_it.dart';
-import 'package:alchemy/src/repository/message_model.dart';
+import 'package:alchemy/src/models/message_model.dart';
 
 class MessagesProvider{
   
-  User _user = GetIt.I.get<User>();
   String _groupChatId;
   String _idFrom;
   String _idTo;

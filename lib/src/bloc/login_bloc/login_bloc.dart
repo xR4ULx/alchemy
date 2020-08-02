@@ -1,38 +1,18 @@
 import 'package:alchemy/src/bloc/login_bloc/bloc.dart';
-import 'package:alchemy/src/repository/user_repository.dart';
 import 'package:bloc/bloc.dart';
 import 'dart:async';
 import 'package:meta/meta.dart';
+import 'package:alchemy/src/services/wizard.dart';
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
-  UserRepository _userRepository;
+  final Wizard wizard;
 
   //Constructor
-  LoginBloc({@required UserRepository userRepository})
-      : assert(userRepository != null),
-        _userRepository = userRepository;
+  LoginBloc({@required this.wizard});
 
   @override
   LoginState get initialState => LoginState.empty();
 
-  /*
-  @override
-  Stream<Transition<LoginEvent, LoginState>> transformEvents(
-    Stream<LoginEvent> events,
-    TransitionFunction<LoginEvent, LoginState> transitionFn,
-  ) {
-    final nonDebounceStream = events.where((event) {
-      return (event is LoginEvent);
-    });
-    final debounceStream = events.where((event) {
-      return (event is LoginEvent);
-    }).debounceTime(Duration(milliseconds: 300));
-    return super.transformEvents(
-      nonDebounceStream.mergeWith([debounceStream]),
-      transitionFn,
-    );
-  }
-  */
 
   @override
   Stream<LoginState> mapEventToState(
@@ -45,8 +25,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
 
   Stream<LoginState> _mapLoginWithGooglePressedToState() async* {
     try {
-      await _userRepository.signInWithGoogle().then((_) {
-        _userRepository.setActive(true);
+      await wizard.userRepository.signInWithGoogle().then((_) {
+        wizard.userRepository.setActive(true);
       });
       yield LoginState.success();
     } catch (_) {

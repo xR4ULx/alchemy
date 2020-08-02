@@ -1,25 +1,18 @@
 import 'package:alchemy/src/bloc/game_bloc/bloc.dart';
-import 'package:alchemy/src/repository/user_model.dart';
-import 'package:alchemy/src/repository/user_repository.dart';
+import 'package:alchemy/src/services/wizard.dart';
 import 'package:alchemy/src/ui/game/game_page.dart';
 import 'package:alchemy/src/ui/game/request_page.dart';
 import 'package:alchemy/src/ui/game/wait_page.dart';
 import 'package:alchemy/src/ui/users/users_page.dart';
-import 'package:alchemy/src/util/notifications.dart';
-import 'package:alchemy/src/util/signaling.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get_it/get_it.dart';
 
 class RootPage extends StatefulWidget {
   final String name;
-  final UserRepository _userRepository;
+  final Wizard wizard;
 
   const RootPage(
-      {Key key, @required this.name, @required UserRepository userRepository})
-      : assert(userRepository != null),
-        _userRepository = userRepository,
-        super(key: key);
+      {Key key, @required this.name, @required this.wizard});
 
   @override
   _RootPageState createState() => _RootPageState();
@@ -27,13 +20,15 @@ class RootPage extends StatefulWidget {
 
 class _RootPageState extends State<RootPage> {
   
-  Notifications _notifications = GetIt.I.get<Notifications>();
-  
+  Wizard blink(){
+    return widget.wizard;
+  }
+
   @override
   void initState() {
     super.initState();
-    _notifications.registerNotification();
-    _notifications.configLocalNotification();
+    blink().notifications.registerNotification();
+    blink().notifications.configLocalNotification();
   }
 
   @override
@@ -46,16 +41,16 @@ class _RootPageState extends State<RootPage> {
           builder: (context, state) {
             if (state is SHome) {
               return UsersPage(
-                  name: widget.name, userRepository: widget._userRepository);
+                  name: widget.name, wizard: blink());
             }
             if (state is SWait) {
-              return WaitPage();
+              return WaitPage(wizard: blink());
             }
             if (state is SRequest) {
-              return RequestPage();
+              return RequestPage(wizard: blink());
             }
             if (state is SGame) {
-              return Game();
+              return Game(wizard: blink());
             }
           },
         ),

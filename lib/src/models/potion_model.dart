@@ -1,4 +1,3 @@
-import 'package:alchemy/src/util/colors.dart';
 import 'package:flutter/material.dart';
 
 class Potion {
@@ -39,7 +38,7 @@ class Potion {
                 offset: const Offset(0.0, 0.0),
                 blurRadius: 20.0,
                 spreadRadius: 3.0,
-                color: (player == 'p1win') ? myAccentColor : Colors.amber,
+                color: (player == 'p1win') ? Color(0xFF70DCA9) : Colors.amber,
               )
             ],
           ),

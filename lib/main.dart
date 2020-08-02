@@ -2,26 +2,20 @@ import 'package:alchemy/src/bloc/authentication_bloc/authentication_bloc.dart';
 import 'package:alchemy/src/bloc/authentication_bloc/authentication_event.dart';
 import 'package:alchemy/src/bloc/authentication_bloc/authentication_state.dart';
 import 'package:alchemy/src/bloc/simple_bloc_delegate.dart';
-import 'package:alchemy/src/repository/user_model.dart';
-import 'package:alchemy/src/repository/user_repository.dart';
 import 'package:alchemy/src/ui/login/login_screen.dart';
 import 'package:alchemy/src/ui/root_page.dart';
 import 'package:alchemy/src/ui/splash_screen.dart';
-import 'package:alchemy/src/util/colors.dart';
-import 'package:alchemy/src/util/notifications.dart';
-import 'package:alchemy/src/util/signaling.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 
+import 'package:alchemy/src/services/wizard.dart';
+
 GetIt getIt = GetIt.instance;
 
 void setupSingletons() async {
-  getIt.registerLazySingleton<User>(() => User());
-  getIt.registerLazySingleton<Signaling>(() => Signaling());
-  getIt.registerLazySingleton<UserRepository>(() => UserRepository());
-  getIt.registerLazySingleton<Notifications>(() => Notifications());
+  getIt.registerLazySingleton<Wizard>(() => Wizard());
 }
 
 void main() {
@@ -30,29 +24,29 @@ void main() {
 
   setupSingletons();
 
-  final UserRepository userRepository = GetIt.I.get<UserRepository>();
+  final Wizard wizard = GetIt.I.get<Wizard>();
 
   runApp(BlocProvider(
     create: (context) =>
-        AuthenticationBloc(userRepository: userRepository)..add(AppStarted()),
-    child: App(userRepository: userRepository),
+        AuthenticationBloc(wizard: wizard)..add(AppStarted()),
+    child: App(wizard: wizard),
   ));
 }
 
 class App extends StatefulWidget {
-  final UserRepository _userRepository;
+  final Wizard wizard;
 
-  App({Key key, @required UserRepository userRepository})
-      : assert(userRepository != null),
-        _userRepository = userRepository,
-        super(key: key);
+  App({Key key, @required this.wizard});
 
   @override
   _AppState createState() => _AppState();
 }
 
 class _AppState extends State<App> with WidgetsBindingObserver {
-  User _user = GetIt.I.get<User>();
+
+  Wizard blink(){
+    return widget.wizard;
+  }
 
   @override
   void initState() {
@@ -67,26 +61,26 @@ class _AppState extends State<App> with WidgetsBindingObserver {
     switch (state) {
       case AppLifecycleState.resumed:
         print('##### RESUMED ####');
-        if (_user != null) {
-          widget._userRepository.setActive(true);
+        if (blink().user != null) {
+          blink().userRepository.setActive(true);
         }
         break;
       case AppLifecycleState.detached:
         print('#### DETACHED ####');
-        if (_user != null) {
-          widget._userRepository.setActive(false);
+        if (blink().user != null) {
+          blink().userRepository.setActive(false);
         }
         break;
       case AppLifecycleState.inactive:
         print('#### INACTIVE ####');
-        if (_user != null) {
-          widget._userRepository.setActive(false);
+        if (blink().user != null) {
+          blink().userRepository.setActive(false);
         }
         break;
       case AppLifecycleState.paused:
         print('#### PAUSED ####');
-        if (_user != null) {
-          widget._userRepository.setActive(false);
+        if (blink().user != null) {
+          blink().userRepository.setActive(false);
         }
         break;
     }
@@ -98,8 +92,8 @@ class _AppState extends State<App> with WidgetsBindingObserver {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-          primaryColor: myPrimaryColor,
-          accentColor: myAccentColor,
+          primaryColor: Color(0xFF1D1E33),
+          accentColor: Color(0xFF70DCA9),
           primaryColorLight: Colors.amber),
       home: BlocBuilder<AuthenticationBloc, AuthenticationState>(
         builder: (context, state) {
@@ -109,11 +103,11 @@ class _AppState extends State<App> with WidgetsBindingObserver {
           if (state is Authenticated) {
             return RootPage(
                 name: state.displayName,
-                userRepository: widget._userRepository);
+                wizard: blink());
           }
           if (state is Unauthenticated) {
             return LoginScreen(
-              userRepository: widget._userRepository,
+              wizard: blink(),
             );
           }
           return Container();

@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:alchemy/src/bloc/game_bloc/bloc.dart';
-import 'package:alchemy/src/repository/user_model.dart';
+import 'package:alchemy/src/models/user_model.dart';
 import 'package:alchemy/src/util/signaling.dart';
 import 'package:bloc/bloc.dart';
 import 'package:get_it/get_it.dart';

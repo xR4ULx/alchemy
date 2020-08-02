@@ -1,28 +1,30 @@
 import 'package:alchemy/src/bloc/game_bloc/bloc.dart';
-import 'package:alchemy/src/repository/user_model.dart';
-import 'package:alchemy/src/repository/user_repository.dart';
-import 'package:alchemy/src/util/signaling.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:alchemy/src/services/wizard.dart';
 
 class RequestPage extends StatefulWidget {
-  const RequestPage({Key key}) : super(key: key);
+  
+  final Wizard wizard;
+
+  const RequestPage({Key key, @required this.wizard});
 
   @override
   _RequestPageState createState() => _RequestPageState();
 }
 
 class _RequestPageState extends State<RequestPage> {
-  Signaling _signaling = GetIt.I.get<Signaling>();
-  User _user = GetIt.I.get<User>();
-  UserRepository _userRepository = GetIt.I.get<UserRepository>();
+
   String _photoUrl;
 
+  Wizard blink(){
+    return widget.wizard;
+  }
+
   getPhoto() async {
-    _photoUrl = await _userRepository.getPhotoUrl(_user.adversary);
+    _photoUrl = await blink().userRepository.getPhotoUrl(widget.wizard.user.adversary);
     setState(() {});
   }
 
@@ -31,12 +33,12 @@ class _RequestPageState extends State<RequestPage> {
     super.initState();
     getPhoto();
 
-    _signaling.onFinishGame = () {
+    widget.wizard.signaling.onFinishGame = () {
 
-      _user.player = '';
-      _user.adversary = '';
-      _userRepository.updateUser();
-      _signaling.emit('exit-game', true);
+      widget.wizard.user.player = '';
+      widget.wizard.user.adversary = '';
+      widget.wizard.userRepository.updateUser();
+      widget.wizard.signaling.emit('exit-game', true);
 
     };
   }
@@ -68,7 +70,7 @@ class _RequestPageState extends State<RequestPage> {
             height: 10,
           ),
             Text(
-              _user.adversary,
+              widget.wizard.user.adversary,
               style: GoogleFonts.griffy(
                 color: Colors.amber,
               ),
@@ -79,8 +81,8 @@ class _RequestPageState extends State<RequestPage> {
               children: <Widget>[
                 FloatingActionButton(
                   onPressed: () {
-                    _signaling.acceptOrDecline(true, _user.adversary);
-                    _user.player = 'p2';
+                    widget.wizard.signaling.acceptOrDecline(true, widget.wizard.user.adversary);
+                    widget.wizard.user.player = 'p2';
                     BlocProvider.of<GameBloc>(context).add(EGame());
                   },
                   backgroundColor: Colors.greenAccent,
@@ -89,10 +91,10 @@ class _RequestPageState extends State<RequestPage> {
                 SizedBox(width: 80),
                 FloatingActionButton(
                   onPressed: () {
-                    _user.player = '';
-                    _user.adversary = '';
-                    _userRepository.updateUser();;
-                    _signaling.emit('finish', true);
+                    widget.wizard.user.player = '';
+                    widget.wizard.user.adversary = '';
+                    widget.wizard.userRepository.updateUser();
+                    widget.wizard.signaling.emit('finish', true);
                     BlocProvider.of<GameBloc>(context).add(EHome());
                   },
                   backgroundColor: Colors.redAccent,

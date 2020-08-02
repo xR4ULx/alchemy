@@ -1,44 +1,43 @@
 import 'package:alchemy/src/bloc/game_bloc/bloc.dart';
 import 'package:alchemy/src/bloc/game_bloc/game_event.dart';
-import 'package:alchemy/src/repository/potion_model.dart';
-import 'package:alchemy/src/repository/user_model.dart';
-import 'package:alchemy/src/repository/user_repository.dart';
+import 'package:alchemy/src/models/potion_model.dart';
 import 'package:alchemy/src/util/check_win.dart';
-import 'package:alchemy/src/util/colors.dart';
-import 'package:alchemy/src/util/signaling.dart';
 import 'package:animated_background/animated_background.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:alchemy/src/services/wizard.dart';
 
 //final potions = new Potions();
 Potions gridState = new Potions();
 
 class Game extends StatefulWidget {
-  Game({Key key}) : super(key: key);
+  
+  final Wizard wizard;
+  const Game({Key key, @required this.wizard});
 
   @override
   _GameState createState() => _GameState();
 }
 
 class _GameState extends State<Game> with TickerProviderStateMixin {
-  Signaling _signaling = GetIt.I.get<Signaling>();
-  User _user = GetIt.I.get<User>();
-  UserRepository _userRepository = GetIt.I.get<UserRepository>();
 
   AnimationController _controller;
   Animation _colorAnimation;
 
   RandomParticleBehaviour _particleBehaviour = new RandomParticleBehaviour();
   ParticleOptions _particleOptions =
-      new ParticleOptions(baseColor: myAccentColor);
+      new ParticleOptions(baseColor: Color(0xFF70DCA9));
 
   String player;
   int alchemyP1;
   int alchemyP2;
   
+  Wizard blink(){
+    return widget.wizard;
+  }
+
   
   @override
   void dispose() {
@@ -52,7 +51,7 @@ class _GameState extends State<Game> with TickerProviderStateMixin {
     alchemyP1 = 0;
     alchemyP2 = 0;
 
-    _userRepository.updateUser();
+    blink().userRepository.updateUser();
 
     //Animation
     _controller =
@@ -70,33 +69,33 @@ class _GameState extends State<Game> with TickerProviderStateMixin {
 
     _particleBehaviour.options = _particleOptions;
 
-    _signaling.onChangeTurn = (data) {
+    blink().signaling.onChangeTurn = (data) {
       setState(() {
         _paintAdversary(data["x"], data["y"]);
         player = data["player"];
       });
     };
 
-    _signaling.onFinishGame = () {
+    blink().signaling.onFinishGame = () {
 
       AwesomeDialog(
             context: context,
             animType: AnimType.SCALE,
             dialogType: DialogType.INFO,
             body: Center(
-              child: Text('${_user.adversary} abandono la partida',
-                        style: GoogleFonts.griffy(color: myPrimaryColor),
+              child: Text('${blink().user.adversary} abandono la partida',
+                        style: GoogleFonts.griffy(color: Theme.of(context).primaryColor),
                         textScaleFactor: 1.2),
               ),
             title: 'Resultado',
             //desc:   'Resultado de la partida',
             btnOkOnPress: () {
-              _user.player = '';
-              _user.adversary = '';
-              _userRepository.updateUser();
+              blink().user.player = '';
+              blink().user.adversary = '';
+              blink().userRepository.updateUser();
               gridState.clearPotions();
-              _user.incrementWins();
-              _signaling.emit('exit-game', true);
+              blink().user.incrementWins();
+              blink().signaling.emit('exit-game', true);
             },
                  )..show();
 
@@ -132,11 +131,11 @@ class _GameState extends State<Game> with TickerProviderStateMixin {
             ),
             child: FloatingActionButton(
               onPressed: () {
-                _user.player = '';
-                _user.adversary = '';
-                _userRepository.updateUser();
+                blink().user.player = '';
+                blink().user.adversary = '';
+                blink().userRepository.updateUser();
                 gridState.clearPotions();
-                _signaling.emit('finish', true);
+                blink().signaling.emit('finish', true);
                 BlocProvider.of<GameBloc>(context).add(EHome());
               },
               backgroundColor: Colors.redAccent,
@@ -160,9 +159,9 @@ class _GameState extends State<Game> with TickerProviderStateMixin {
           children: <Widget>[
             SafeArea(child: SizedBox(),),
             Text(
-              _user.player == player
-                  ? 'Turno de ${_user.displayName}'
-                  : 'Turno de ${_user.adversary}',
+              blink().user.player == player
+                  ? 'Turno de ${blink().user.displayName}'
+                  : 'Turno de ${blink().user.adversary}',
               style: GoogleFonts.griffy(color: Colors.white),
               textScaleFactor: 2,
               textAlign: TextAlign.center,
@@ -186,9 +185,9 @@ class _GameState extends State<Game> with TickerProviderStateMixin {
                 Column(
                   children: <Widget>[
                     Text(
-                      _user.player == 'p1'
-                          ? _user.displayName
-                          : _user.adversary,
+                      blink().user.player == 'p1'
+                          ? blink().user.displayName
+                          : blink().user.adversary,
                       style: GoogleFonts.griffy(color: Colors.amber),
                       textScaleFactor: 2,
                     ),
@@ -204,9 +203,9 @@ class _GameState extends State<Game> with TickerProviderStateMixin {
                 Column(
                   children: <Widget>[
                     Text(
-                      _user.player == 'p2'
-                          ? _user.displayName
-                          : _user.adversary,
+                      blink().user.player == 'p2'
+                          ? blink().user.displayName
+                          : blink().user.adversary,
                       style: GoogleFonts.griffy(color: Colors.amber),
                       textScaleFactor: 2,
                     ),
@@ -271,7 +270,7 @@ class _GameState extends State<Game> with TickerProviderStateMixin {
 
     CheckWin check = new CheckWin(player, gridState, _colorAnimation);
     await check.comprobarWin();
-    if(_user.player == 'p1'){
+    if(blink().user.player == 'p1'){
         alchemyP2 = check.winsPlayer;
     }else{
         alchemyP1 = check.winsPlayer;
@@ -283,21 +282,21 @@ class _GameState extends State<Game> with TickerProviderStateMixin {
 
       if (alchemyP1 > alchemyP2) {
         //GANA P1
-        if (_user.player == 'p1') {
-          _user.incrementWins();
-          winner = _user.displayName;
+        if (blink().user.player == 'p1') {
+          blink().user.incrementWins();
+          winner = blink().user.displayName;
         }else{
-          winner = _user.adversary;
+          winner = blink().user.adversary;
         }
         
       } else if (alchemyP1 == alchemyP2) {
-        _user.incrementWins();
+        blink().user.incrementWins();
       }else{
         // GANA P2
-        if(_user.player == 'p1'){
-          winner = _user.adversary;
+        if(blink().user.player == 'p1'){
+          winner = blink().user.adversary;
         }else{
-          winner = _user.displayName;
+          winner = blink().user.displayName;
         }
 
       }
@@ -308,17 +307,17 @@ class _GameState extends State<Game> with TickerProviderStateMixin {
             dialogType: DialogType.INFO,
             body: Center(child: 
               Text(winner != '' ? 'Ganó $winner': 'Empate',
-                        style: GoogleFonts.griffy(color: myPrimaryColor),
+                        style: GoogleFonts.griffy(color: Theme.of(context).primaryColor),
                         textScaleFactor: 1.2),
             ),
             title: 'Resultado',
             //desc:   'Resultado de la partida',
             btnOkOnPress: () {
-              _user.player = '';
-              _user.adversary = '';
-              _userRepository.updateUser();
+              blink().user.player = '';
+              blink().user.adversary = '';
+              blink().userRepository.updateUser();
               gridState.clearPotions();
-              _signaling.emit('exit-game', true);
+              blink().signaling.emit('exit-game', true);
             },
                  )..show();
 
@@ -330,7 +329,7 @@ class _GameState extends State<Game> with TickerProviderStateMixin {
 
   _gridItemTapped(int x, int y) async {
     //_timer.cancel();
-    if (player == _user.player) {
+    if (player == blink().user.player) {
       Potion potion = gridState.getPotion(x, y);
       String antPlayer;
 
@@ -343,7 +342,7 @@ class _GameState extends State<Game> with TickerProviderStateMixin {
       if (antPlayer != null) {
         CheckWin check = new CheckWin(antPlayer, gridState, _colorAnimation);
         await check.comprobarWin();
-        if(_user.player == 'p1'){
+        if(blink().user.player == 'p1'){
           alchemyP1 = check.winsPlayer;
         }else{
           alchemyP2 = check.winsPlayer;
@@ -351,28 +350,28 @@ class _GameState extends State<Game> with TickerProviderStateMixin {
         
       }
 
-      _signaling.emit('changeTurn', {"player": player, "x": x, "y": y});
+      blink().signaling.emit('changeTurn', {"player": player, "x": x, "y": y});
 
       if (gridState.fullPotions()) {
         String winner = '';
 
       if (alchemyP1 > alchemyP2) {
         //GANA P1
-        if (_user.player == 'p1') {
-          _user.incrementWins();
-          winner = _user.displayName;
+        if (blink().user.player == 'p1') {
+          blink().user.incrementWins();
+          winner = blink().user.displayName;
         }else{
-          winner = _user.adversary;
+          winner = blink().user.adversary;
         }
         
       } else if (alchemyP1 == alchemyP2) {
-        _user.incrementWins();
+        blink().user.incrementWins();
       }else{
         // GANA P2
-        if(_user.player == 'p1'){
-          winner = _user.adversary;
+        if(blink().user.player == 'p1'){
+          winner = blink().user.adversary;
         }else{
-          winner = _user.displayName;
+          winner = blink().user.displayName;
         }
       }
 
@@ -382,17 +381,17 @@ class _GameState extends State<Game> with TickerProviderStateMixin {
             dialogType: DialogType.INFO,
             body: Center(child: 
             Text(winner != '' ? 'Ganó $winner': 'Empate',
-                        style: GoogleFonts.griffy(color: myPrimaryColor),
+                        style: GoogleFonts.griffy(color: Theme.of(context).primaryColor),
                         textScaleFactor: 1.2),
             ),
             title: 'Resultado',
             //desc:   'Resultado de la partida',
             btnOkOnPress: () {
-              _user.player = '';
-              _user.adversary = '';
-              _userRepository.updateUser();
+              blink().user.player = '';
+              blink().user.adversary = '';
+              blink().userRepository.updateUser();
               gridState.clearPotions();
-              _signaling.emit('exit-game', true);
+              blink().signaling.emit('exit-game', true);
             },
                  )..show();
       }

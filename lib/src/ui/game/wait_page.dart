@@ -1,42 +1,45 @@
 import 'package:alchemy/src/bloc/game_bloc/bloc.dart';
-import 'package:alchemy/src/repository/user_model.dart';
-import 'package:alchemy/src/repository/user_repository.dart';
-import 'package:alchemy/src/util/signaling.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:alchemy/src/services/wizard.dart';
 
 class WaitPage extends StatefulWidget {
-  const WaitPage({Key key}) : super(key: key);
+
+  final Wizard wizard;
+  const WaitPage({Key key, @required this.wizard });
 
   @override
   _WaitPageState createState() => _WaitPageState();
 }
 
 class _WaitPageState extends State<WaitPage> {
-  Signaling _signaling = GetIt.I.get<Signaling>();
-  User _user = GetIt.I.get<User>();
-  UserRepository _userRepository = GetIt.I.get<UserRepository>();
+
   String _photoUrl;
 
+  Wizard blink(){
+    return widget.wizard;
+  }
+
   getPhoto() async {
-    _photoUrl = await _userRepository.getPhotoUrl(_user.adversary);
+    _photoUrl = await blink().userRepository.getPhotoUrl(blink().user.adversary);
     setState(() {});
   }
   
+
+
   @override
   void initState() {
     super.initState();
     getPhoto();
 
-    _signaling.onFinishGame = () {
+    blink().signaling.onFinishGame = () {
 
-      _user.player = '';
-      _user.adversary = '';
-      _userRepository.updateUser();
-      _signaling.emit('exit-game', true);
+      blink().user.player = '';
+      blink().user.adversary = '';
+      blink().userRepository.updateUser();
+      blink().signaling.emit('exit-game', true);
 
     };
 
@@ -80,10 +83,10 @@ class _WaitPageState extends State<WaitPage> {
           ),
           FloatingActionButton(
             onPressed: () {
-              _user.player = '';
-                _user.adversary = '';
-                _userRepository.updateUser();
-                _signaling.emit('finish', true);
+              blink().user.player = '';
+                blink().user.adversary = '';
+                blink().userRepository.updateUser();
+                blink().signaling.emit('finish', true);
                 BlocProvider.of<GameBloc>(context).add(EHome());
             },
             backgroundColor: Colors.redAccent,

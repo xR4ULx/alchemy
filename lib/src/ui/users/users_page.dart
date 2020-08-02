@@ -1,52 +1,49 @@
 import 'package:alchemy/src/bloc/authentication_bloc/bloc.dart';
-import 'package:alchemy/src/repository/user_model.dart';
-import 'package:alchemy/src/repository/user_repository.dart';
 import 'package:alchemy/src/ui/users/friends_page.dart';
 import 'package:alchemy/src/ui/users/people_page.dart';
-import 'package:alchemy/src/util/signaling.dart';
 import 'package:bubble_bottom_bar/bubble_bottom_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:simple_search_bar/simple_search_bar.dart';
-import 'package:alchemy/src/util/colors.dart';
+import 'package:alchemy/src/services/wizard.dart';
+import 'package:alchemy/src/ui/widgets/widgets.dart';
 
 class UsersPage extends StatefulWidget {
   final String name;
-  final UserRepository _userRepository;
+  final Wizard wizard;
 
   UsersPage(
-      {Key key, @required this.name, @required UserRepository userRepository})
-      : assert(userRepository != null),
-        _userRepository = userRepository,
-        super(key: key);
+      {Key key, @required this.name, @required this.wizard});
   @override
   _UsersPageState createState() => _UsersPageState();
 }
 
 class _UsersPageState extends State<UsersPage> {
+
   int _currentIndex;
   final List<Widget> _children = [];
   final AppBarController appBarController = AppBarController();
-  User _user = GetIt.I.get<User>();
-  Signaling _signaling = GetIt.I.get<Signaling>();
+
+  Wizard blink(){
+    return widget.wizard;
+  }
 
   @override
   void initState() {
     super.initState();
-    widget._userRepository.setActive(true);
-    _currentIndex = 1;
+    blink().userRepository.setActive(true);
+    _currentIndex = 0;
     _children.add(PeoplePage(
       name: widget.name,
-      userRepository: widget._userRepository,
+      wizard: blink(),
     ));
     _children.add(
-        FriendsPage(name: widget.name, userRepository: widget._userRepository));
+        FriendsPage(name: widget.name, wizard: blink()));
   }
 
   void logOut() {
-    _signaling.emit('logout', _user.displayName);
+    blink().signaling.emit('logout', blink().user.displayName);
     BlocProvider.of<AuthenticationBloc>(context).add(LoggedOut());
   }
 
@@ -56,68 +53,10 @@ class _UsersPageState extends State<UsersPage> {
     });
   }
 
-  Widget searchBar() {
-    return SearchAppBar(
-        primary: Theme.of(context).primaryColor,
-        appBarController: appBarController,
-        // You could load the bar with search already active
-        autoSelected: false,
-        searchHint: "Indique usuario...",
-        mainTextColor: Colors.white,
-        onChange: (String value) {
-          //Your function to filter list. It should interact with
-          //the Stream that generate the final list
-          setState(() {
-            widget._userRepository.searchUsers(value);
-          });
-        },
-        //Will show when SEARCH MODE wasn't active
-        mainAppBar: AppBar(
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: <Widget>[
-              Image(
-                  alignment: Alignment.centerLeft,
-                  color: Colors.white,
-                  image: AssetImage("assets/textamber.png"),
-                  width: MediaQuery.of(context).size.width / 6,
-                ),
-          
-          
-              Row(children: <Widget>[
-                Image(
-                      image: AssetImage("assets/p1.png"),
-                      width: 30,
-                    ),
-            Text(
-            _user.wins == null ? "x0" : "x${_user.wins}",
-            style: GoogleFonts.griffy(color: Colors.white),
-            textScaleFactor: 1.2,
-          ),
-              ],),
-            ],),
-          
-        
-          actions: <Widget>[
-            InkWell(
-              child: Icon(
-                Icons.search,
-              ),
-              onTap: () {
-                //This is where You change to SEARCH MODE. To hide, just
-                //add FALSE as value on the stream
-                appBarController.stream.add(true);
-              },
-            ),
-          ],
-        ));
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: searchBar(),
+      appBar: SearchAppBarWidget(appBarController: appBarController,wizard: widget.wizard),
       body: _children[_currentIndex],
       floatingActionButton: Container(
           decoration: BoxDecoration(
@@ -126,7 +65,7 @@ class _UsersPageState extends State<UsersPage> {
                 offset: const Offset(0.4, 0.4),
                 blurRadius: 25,
                 spreadRadius: 2,
-                color: myAccentColor,
+                color: Theme.of(context).accentColor,
               )
             ],
           ),
@@ -142,7 +81,7 @@ class _UsersPageState extends State<UsersPage> {
           )),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       bottomNavigationBar: BubbleBottomBar(
-        backgroundColor: myPrimaryColor,
+        backgroundColor: Theme.of(context).primaryColor,
         hasNotch: true,
         fabLocation: BubbleBottomBarFabLocation.end,
         opacity: .2,
@@ -156,30 +95,30 @@ class _UsersPageState extends State<UsersPage> {
           BubbleBottomBarItem(
               backgroundColor: Colors.transparent,
               icon: Icon(
-                Icons.home,
+                Icons.supervised_user_circle,
                 color: Colors.white,
               ),
               activeIcon: Icon(
-                Icons.home,
+                Icons.supervised_user_circle,
                 color: Colors.white
               ),
               title: Text(
-                "Home",
+                "Usuarios",
                 style: GoogleFonts.openSans(color: Colors.white),
                 textScaleFactor: 1.2,
               )),
           BubbleBottomBarItem(
               backgroundColor: Colors.transparent,
               icon: Icon(
-                Icons.supervised_user_circle,
+                Icons.favorite_border,
                 color: Colors.tealAccent,
               ),
               activeIcon: Icon(
-                Icons.supervised_user_circle,
+                Icons.favorite_border,
                 color: Colors.tealAccent,
               ),
               title: Text(
-                "Friends",
+                "Favoritos",
                 style: GoogleFonts.openSans(color: Colors.tealAccent),
                 textScaleFactor: 1.2,
               )),

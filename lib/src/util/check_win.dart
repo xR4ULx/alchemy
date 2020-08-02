@@ -1,4 +1,4 @@
-import 'package:alchemy/src/repository/potion_model.dart';
+import 'package:alchemy/src/models/potion_model.dart';
 import 'package:flutter/animation.dart';
 import 'package:flutter/material.dart';
 

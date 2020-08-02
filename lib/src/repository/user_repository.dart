@@ -1,20 +1,26 @@
 // Imports
 import 'dart:async';
-import 'package:alchemy/src/repository/user_model.dart';
+import 'package:alchemy/src/models/user_model.dart';
 import 'package:alchemy/src/util/signaling.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:get_it/get_it.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-
-
+import 'package:meta/meta.dart';
 
 class UserRepository {
+  User user;
+  Signaling signaling;
   final FirebaseAuth _firebaseAuth;
   final GoogleSignIn _googleSignIn;
-  //FirebaseUser _firebaseUser;
-  User _user = GetIt.I.get<User>();
-  Signaling _signaling = GetIt.I.get<Signaling>();
+
+  // Constructor
+  UserRepository(
+      {FirebaseAuth firebaseAuth,
+      GoogleSignIn googleSignIn,
+      @required this.user,
+      @required this.signaling})
+      : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance,
+        _googleSignIn = googleSignIn ?? GoogleSignIn();
 
   //PROVIDER
   QuerySnapshot users;
@@ -43,14 +49,14 @@ class UserRepository {
     _usersSink(initSnap);
     await for (QuerySnapshot snap in Firestore.instance
         .collection('users')
-        .where('follows', arrayContains: _user.uid)
+        .where('follows', arrayContains: user.uid)
         .orderBy('isActive', descending: true)
         .snapshots()) {
       _usersSink(snap);
     }
   }
 
-  Future<String> getPhotoUrl(String playerRequest) async{
+  Future<String> getPhotoUrl(String playerRequest) async {
     final QuerySnapshot docs = await Firestore.instance
         .collection('users')
         .where('displayName', isEqualTo: playerRequest)
@@ -60,22 +66,23 @@ class UserRepository {
     return documents[0]['photoUrl'];
   }
 
-  void updateUser() async{
+  void updateUser() async {
     final QuerySnapshot docs = await Firestore.instance
         .collection('users')
-        .where('displayName', isEqualTo: _user.displayName)
+        .where('displayName', isEqualTo: user.displayName)
         .getDocuments();
     final List<DocumentSnapshot> documents = docs.documents;
 
     String _userid = documents[0]['uid'];
-    
-    Firestore.instance
-          .collection('users')
-          .document(_userid)
-          .updateData({'player': _user.player, 'adversary': _user.adversary, 'avisos': _user.avisos});
+
+    Firestore.instance.collection('users').document(_userid).updateData({
+      'player': user.player,
+      'adversary': user.adversary,
+      'avisos': user.avisos
+    });
   }
 
-  void followTo(String name) async {
+  void followTo(String name, bool isfollow) async {
     final QuerySnapshot docs = await Firestore.instance
         .collection('users')
         .where('displayName', isEqualTo: name)
@@ -84,19 +91,23 @@ class UserRepository {
 
     String followid = documents[0]['uid'];
     List<dynamic> follows = documents[0]['follows'];
-    final result = follows.where((item) => item == _user.uid).toList();
+    final result = follows.where((item) => item == user.uid).toList();
     if (result.length == 0) {
-      follows.add(_user.uid);
+      follows.add(user.uid);
 
       Firestore.instance
           .collection('users')
           .document(followid)
           .updateData({'follows': follows});
     }
-    getAllUsers();
+    if(isfollow){
+      getFollows();
+    }else{
+      getAllUsers();
+    }
   }
 
-  void unfollowTo(String name) async {
+  void unfollowTo(String name, bool isfollow) async {
     final QuerySnapshot docs = await Firestore.instance
         .collection('users')
         .where('displayName', isEqualTo: name)
@@ -105,19 +116,23 @@ class UserRepository {
 
     String followid = documents[0]['uid'];
     List<dynamic> follows = documents[0]['follows'];
-    final result = follows.where((item) => item == _user.uid).toList();
+    final result = follows.where((item) => item == user.uid).toList();
     if (result.length != 0) {
-      follows.remove(_user.uid);
+      follows.remove(user.uid);
 
       Firestore.instance
           .collection('users')
           .document(followid)
           .updateData({'follows': follows});
     }
-    getAllUsers();
+    if(isfollow){
+      getFollows();
+    }else{
+      getAllUsers();
+    }
   }
 
-    void avisar(String name) async {
+  void avisar(String name, bool isfollow) async {
     final QuerySnapshot docs = await Firestore.instance
         .collection('users')
         .where('displayName', isEqualTo: name)
@@ -126,16 +141,20 @@ class UserRepository {
 
     String avisoid = documents[0]['uid'];
     List<dynamic> avisos = documents[0]['avisos'];
-    final result = avisos.where((item) => item == _user.uid).toList();
+    final result = avisos.where((item) => item == user.uid).toList();
     if (result.length == 0) {
-      avisos.add(_user.uid);
+      avisos.add(user.uid);
 
       Firestore.instance
           .collection('users')
           .document(avisoid)
           .updateData({'avisos': avisos});
     }
-    getAllUsers();
+    if(isfollow){
+      getFollows();
+    }else{
+      getAllUsers();
+    }
   }
 
   void searchUsers(String query) async {
@@ -150,11 +169,6 @@ class UserRepository {
       _usersSink(snap);
     }
   }
-
-  // Constructor
-  UserRepository({FirebaseAuth firebaseAuth, GoogleSignIn googleSignIn})
-      : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance,
-        _googleSignIn = googleSignIn ?? GoogleSignIn();
 
   // SignInWithGoogle
   Future<FirebaseUser> signInWithGoogle() async {
@@ -191,45 +205,45 @@ class UserRepository {
             .getDocuments();
         final List<DocumentSnapshot> documents = result.documents;
 
-        _signaling.emit('login', _firebaseUser.displayName);
+        signaling.emit('login', _firebaseUser.displayName);
 
         if (documents.length == 0) {
-          _user.displayName = _firebaseUser.displayName;
-          _user.photoUrl = _firebaseUser.photoUrl;
-          _user.uid = _firebaseUser.uid;
-          _user.player = '';
-          _user.adversary = '';
-          _user.follows = [""];
-          _user.avisos = [""];
-          _user.wins = 0;
-          _user.isActive = true;
+          user.displayName = _firebaseUser.displayName;
+          user.photoUrl = _firebaseUser.photoUrl;
+          user.uid = _firebaseUser.uid;
+          user.player = '';
+          user.adversary = '';
+          user.follows = [""];
+          user.avisos = [""];
+          user.wins = 0;
+          user.isActive = true;
 
           // Update data to server if new user
           Firestore.instance
               .collection('users')
               .document(_firebaseUser.uid)
-              .setData(_user.toJson());
+              .setData(user.toJson());
         } else {
           Firestore.instance
               .collection('users')
               .document(_firebaseUser.uid)
               .updateData({'isActive': active});
 
-          _user.displayName = documents[0]['displayName'];
-          _user.photoUrl = documents[0]['photoUrl'];
-          _user.uid = documents[0]['uid'];
-          _user.player = documents[0]['player'];
-          _user.adversary = documents[0]['adversary'];
-          _user.wins = documents[0]['wins'];
-          _user.isActive = documents[0]['isActive'];
-          _user.follows = documents[0]['follows'];
-          _user.avisos = [""];
+          user.displayName = documents[0]['displayName'];
+          user.photoUrl = documents[0]['photoUrl'];
+          user.uid = documents[0]['uid'];
+          user.player = documents[0]['player'];
+          user.adversary = documents[0]['adversary'];
+          user.wins = documents[0]['wins'];
+          user.isActive = documents[0]['isActive'];
+          user.follows = documents[0]['follows'];
+          user.avisos = [""];
         }
       }
     } else {
       Firestore.instance
           .collection('users')
-          .document(_user.uid)
+          .document(user.uid)
           .updateData({'isActive': active});
     }
   }

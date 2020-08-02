@@ -1,6 +1,5 @@
 import 'package:alchemy/src/bloc/authentication_bloc/bloc.dart';
 import 'package:alchemy/src/bloc/login_bloc/bloc.dart';
-import 'package:alchemy/src/repository/user_repository.dart';
 import 'package:animated_background/animated_background.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -9,12 +8,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'google_login_button.dart';
 
 class LoginForm extends StatefulWidget {
-  final UserRepository _userRepository;
+  
 
-  LoginForm({Key key, @required UserRepository userRepository})
-      : assert(userRepository != null),
-        _userRepository = userRepository,
-        super(key: key);
+  LoginForm({Key key,y});
 
   @override
   _LoginFormState createState() => _LoginFormState();
@@ -22,24 +18,14 @@ class LoginForm extends StatefulWidget {
 
 class _LoginFormState extends State<LoginForm>
     with SingleTickerProviderStateMixin {
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
 
-  LoginBloc _loginBloc;
-
-  UserRepository get _userRepository => widget._userRepository;
-
-  bool get isPopulated =>
-      _emailController.text.isNotEmpty && _passwordController.text.isNotEmpty;
-
-  bool isLoginButtonEnabled(LoginState state) {
-    return state.isFormValid && isPopulated && !state.isSubmitting;
-  }
+  RandomParticleBehaviour _particleBehaviour = new RandomParticleBehaviour();
+  ParticleOptions _particleOptions = new ParticleOptions(baseColor: Color(0xFF70DCA9));
 
   @override
   void initState() {
     super.initState();
-    _loginBloc = BlocProvider.of<LoginBloc>(context);
+    _particleBehaviour.options = _particleOptions;
   }
 
   @override
@@ -78,7 +64,7 @@ class _LoginFormState extends State<LoginForm>
     }, child: BlocBuilder<LoginBloc, LoginState>(
       builder: (context, state) {
         return AnimatedBackground(
-            behaviour: RandomParticleBehaviour(),
+            behaviour: _particleBehaviour,
             vsync: this,
             child: Center(
                 child: Column(

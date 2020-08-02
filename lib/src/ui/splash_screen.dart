@@ -1,5 +1,3 @@
-import 'package:alchemy/main.dart';
-import 'package:alchemy/src/util/colors.dart';
 import 'package:animated_background/animated_background.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -12,8 +10,7 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
   RandomParticleBehaviour _particleBehaviour = new RandomParticleBehaviour();
-  ParticleOptions _particleOptions =
-      new ParticleOptions(baseColor: myAccentColor);
+  ParticleOptions _particleOptions = new ParticleOptions(baseColor: Color(0xFF70DCA9));
 
   @override
   void initState() {

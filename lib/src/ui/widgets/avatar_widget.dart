@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 
 class AvatarWidget extends StatelessWidget {
-  const AvatarWidget({@required this.photoUrl});
   final String photoUrl;
+  const AvatarWidget({@required this.photoUrl});
+  
 
   @override
   Widget build(BuildContext context) {

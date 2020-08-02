@@ -1,17 +1,15 @@
 import 'dart:async';
 
 import 'package:alchemy/src/bloc/authentication_bloc/bloc.dart';
-import 'package:alchemy/src/repository/user_repository.dart';
+import 'package:alchemy/src/services/wizard.dart';
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 
 class AuthenticationBloc
     extends Bloc<AuthenticationEvent, AuthenticationState> {
-  final UserRepository _userRepository;
+  final Wizard wizard;
 
-  AuthenticationBloc({@required UserRepository userRepository})
-      : assert(userRepository != null),
-        _userRepository = userRepository;
+  AuthenticationBloc({@required this.wizard});
 
   @override
   AuthenticationState get initialState => Uninitialized();
@@ -33,9 +31,9 @@ class AuthenticationBloc
 
   Stream<AuthenticationState> _mapAppStartedToState() async* {
     try {
-      final isSignedIn = await _userRepository.isSignedIn();
+      final isSignedIn = await wizard.userRepository.isSignedIn();
       if (isSignedIn) {
-        final user = await _userRepository.getUser();
+        final user = await wizard.userRepository.getUser();
         yield await Future.delayed(Duration(seconds: 5), () {
           return Authenticated(user);
         });
@@ -50,11 +48,11 @@ class AuthenticationBloc
   }
 
   Stream<AuthenticationState> _mapLoggedInToState() async* {
-    yield Authenticated(await _userRepository.getUser());
+    yield Authenticated(await wizard.userRepository.getUser());
   }
 
   Stream<AuthenticationState> _mapLoggedOutToState() async* {
     yield Unauthenticated();
-    _userRepository.signOut();
+    wizard.userRepository.signOut();
   }
 }
