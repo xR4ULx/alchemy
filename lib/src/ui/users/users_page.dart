@@ -13,19 +13,17 @@ class UsersPage extends StatefulWidget {
   final String name;
   final Wizard wizard;
 
-  UsersPage(
-      {Key key, @required this.name, @required this.wizard});
+  UsersPage({Key key, @required this.name, @required this.wizard});
   @override
   _UsersPageState createState() => _UsersPageState();
 }
 
 class _UsersPageState extends State<UsersPage> {
-
   int _currentIndex;
   final List<Widget> _children = [];
   final AppBarController appBarController = AppBarController();
 
-  Wizard blink(){
+  Wizard blink() {
     return widget.wizard;
   }
 
@@ -38,8 +36,7 @@ class _UsersPageState extends State<UsersPage> {
       name: widget.name,
       wizard: blink(),
     ));
-    _children.add(
-        FriendsPage(name: widget.name, wizard: blink()));
+    _children.add(FriendsPage(name: widget.name, wizard: blink()));
   }
 
   void logOut() {
@@ -56,30 +53,9 @@ class _UsersPageState extends State<UsersPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: SearchAppBarWidget(appBarController: appBarController,wizard: widget.wizard),
+      appBar: SearchAppBarWidget(
+          appBarController: appBarController, wizard: widget.wizard),
       body: _children[_currentIndex],
-      floatingActionButton: Container(
-          decoration: BoxDecoration(
-            boxShadow: [
-              BoxShadow(
-                offset: const Offset(0.4, 0.4),
-                blurRadius: 25,
-                spreadRadius: 2,
-                color: Theme.of(context).accentColor,
-              )
-            ],
-          ),
-          child: FloatingActionButton(
-            onPressed: () {
-              logOut();
-            },
-            backgroundColor: Theme.of(context).primaryColor,
-            child: Icon(
-              Icons.exit_to_app,
-              color: Colors.white,
-            ),
-          )),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       bottomNavigationBar: BubbleBottomBar(
         backgroundColor: Theme.of(context).primaryColor,
         hasNotch: true,
@@ -93,33 +69,31 @@ class _UsersPageState extends State<UsersPage> {
         elevation: 3,
         items: <BubbleBottomBarItem>[
           BubbleBottomBarItem(
-              backgroundColor: Colors.transparent,
+              backgroundColor: Colors.white,
               icon: Icon(
                 Icons.supervised_user_circle,
                 color: Colors.white,
               ),
-              activeIcon: Icon(
-                Icons.supervised_user_circle,
-                color: Colors.white
-              ),
+              activeIcon:
+                  Icon(Icons.supervised_user_circle, color: Colors.white),
               title: Text(
                 "Usuarios",
                 style: GoogleFonts.openSans(color: Colors.white),
                 textScaleFactor: 1.2,
               )),
           BubbleBottomBarItem(
-              backgroundColor: Colors.transparent,
+              backgroundColor: Colors.red,
               icon: Icon(
                 Icons.favorite_border,
-                color: Colors.tealAccent,
+                color: Colors.redAccent,
               ),
               activeIcon: Icon(
                 Icons.favorite_border,
-                color: Colors.tealAccent,
+                color: Colors.redAccent,
               ),
               title: Text(
                 "Favoritos",
-                style: GoogleFonts.openSans(color: Colors.tealAccent),
+                style: GoogleFonts.openSans(color: Colors.redAccent),
                 textScaleFactor: 1.2,
               )),
         ],

@@ -1,6 +1,10 @@
 import 'package:alchemy/src/ui/widgets/widgets.dart';
+import 'package:alchemy/src/util/const.dart';
 import 'package:flutter/material.dart';
 import 'package:alchemy/src/services/wizard.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../bloc/game_bloc/bloc.dart';
 
 class UserWidget extends StatelessWidget {
   final AsyncSnapshot<dynamic> snapshot;
@@ -9,7 +13,10 @@ class UserWidget extends StatelessWidget {
   final bool follows;
 
   const UserWidget(
-      {@required this.snapshot, @required this.index, @required this.wizard, @required this.follows});
+      {@required this.snapshot,
+      @required this.index,
+      @required this.wizard,
+      @required this.follows});
 
   bool isFollower(List<dynamic> follows) {
     final result = follows.where((item) => item == wizard.user.uid).toList();
@@ -51,9 +58,9 @@ class UserWidget extends StatelessWidget {
               ),
               child: FlatButton(
                 shape: new RoundedRectangleBorder(
-                    borderRadius: new BorderRadius.circular(10.0)),
-                padding: EdgeInsets.all(5),
-                color: Colors.transparent,
+                    borderRadius: new BorderRadius.circular(8.0)),
+                padding: EdgeInsets.all(12),
+                color: Theme.of(context).accentColor.withOpacity(0.2),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -90,25 +97,32 @@ class UserWidget extends StatelessWidget {
                             )),
                             snapshot.data.documents[index]['isActive']
                                 ? snapshot.data.documents[index]['player'] == ''
-                                    ? InvitarWidget(snapshot: snapshot, index: index, wizard: wizard)
+                                    ? InvitarWidget(
+                                        snapshot: snapshot,
+                                        index: index,
+                                        wizard: wizard)
                                     : OcupadoWidget()
-                                : isAvisar(snapshot.data.documents[index]
-                                        ['avisos'])
-                                    ? AvisarWidget(snapshot: snapshot, index: index, wizard: wizard, follows: follows)
-                                    : Container(),
+                                : Container(),
                           ],
                         ),
                       ),
                     ),
                   ],
                 ),
-                onPressed: () {},
+                onPressed: () {
+                  BlocProvider.of<GameBloc>(context).add(EChat(
+                    peerId: snapshot.data.documents[index]['uid'],
+                    peerAvatar: snapshot.data.documents[index]['photoUrl'],
+                  ));
+                },
                 onLongPress: () {
                   isFollower(snapshot.data.documents[index]['follows'])
                       ? wizard.userRepository.unfollowTo(
-                          snapshot.data.documents[index]['displayName'], follows)
+                          snapshot.data.documents[index]['displayName'],
+                          follows)
                       : wizard.userRepository.followTo(
-                          snapshot.data.documents[index]['displayName'], follows);
+                          snapshot.data.documents[index]['displayName'],
+                          follows);
                 },
               ),
             ),

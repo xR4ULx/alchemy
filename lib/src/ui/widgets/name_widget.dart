@@ -14,7 +14,7 @@ class NameWidget extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Text(
-          displayName,
+          displayName.length > 15 ? displayName.substring(0, 15) : displayName,
           style: GoogleFonts.openSans(),
         ),
         Text(

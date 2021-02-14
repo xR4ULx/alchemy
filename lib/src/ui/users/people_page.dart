@@ -17,11 +17,7 @@ class PeoplePage extends StatefulWidget {
   _PeoplePageState createState() => _PeoplePageState();
 }
 
-class _PeoplePageState extends State<PeoplePage> with TickerProviderStateMixin {
-
-  RandomParticleBehaviour _particleBehaviour = new RandomParticleBehaviour();
-  ParticleOptions _particleOptions = new ParticleOptions(baseColor: Color(0xFF70DCA9));
-
+class _PeoplePageState extends State<PeoplePage> {
   Wizard blink() {
     return widget.wizard;
   }
@@ -34,8 +30,6 @@ class _PeoplePageState extends State<PeoplePage> with TickerProviderStateMixin {
     blink().user.adversary = '';
     blink().user.avisos = [""];
     blink().userRepository.updateUser();
-    _particleBehaviour.options = _particleOptions;
-    
   }
 
   @override
@@ -44,34 +38,33 @@ class _PeoplePageState extends State<PeoplePage> with TickerProviderStateMixin {
       body: Stack(
         children: <Widget>[
           // List
-          AnimatedBackground(
-            behaviour: _particleBehaviour,
-            vsync: this,
-            child: Container(
-              child: StreamBuilder(
-                stream: blink().userRepository.usersStream,
-                builder: (context, snapshot) {
-                  if (!snapshot.hasData) {
-                    return Center(
-                      child: CircularProgressIndicator(
-                        valueColor:
-                            AlwaysStoppedAnimation<Color>(Colors.purple),
-                      ),
-                    );
-                  } else {
-                    return ListView.builder(
-                      padding: EdgeInsets.all(0.5),
-                      itemBuilder:
-                          (context, index) =>
-                              (snapshot.data.documents[index]['uid'] ==
-                                      blink().user.uid)
-                                  ? Container()
-                                  : UserWidget(snapshot: snapshot, index: index, wizard: blink(), follows:  false,),
-                      itemCount: snapshot.data.documents.length,
-                    );
-                  }
-                },
-              ),
+          Container(
+            child: StreamBuilder(
+              stream: blink().userRepository.usersStream,
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return Center(
+                    child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.purple),
+                    ),
+                  );
+                } else {
+                  return ListView.builder(
+                    padding: EdgeInsets.all(0.5),
+                    itemBuilder: (context, index) =>
+                        (snapshot.data.documents[index]['uid'] ==
+                                blink().user.uid)
+                            ? Container()
+                            : UserWidget(
+                                snapshot: snapshot,
+                                index: index,
+                                wizard: blink(),
+                                follows: false,
+                              ),
+                    itemCount: snapshot.data.documents.length,
+                  );
+                }
+              },
             ),
           ),
         ],
