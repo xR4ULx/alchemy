@@ -7,21 +7,18 @@ class GoogleLoginButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GoogleSignInButton(
-      onPressed: (){
-        Scaffold.of(context).showSnackBar(
-          SnackBar(
+      borderRadius: 32,
+      splashColor: Colors.transparent,
+      onPressed: () {
+        Scaffold.of(context).showSnackBar(SnackBar(
             content: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text('Loggin in...'),
-                CircularProgressIndicator(),
-              ],
-            )
-          )
-        );
-        BlocProvider.of<LoginBloc>(context).add(
-          LoginWithGooglePressed()
-        );
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Text('Loggin in...'),
+            CircularProgressIndicator(),
+          ],
+        )));
+        BlocProvider.of<LoginBloc>(context).add(LoginWithGooglePressed());
       },
     );
   }

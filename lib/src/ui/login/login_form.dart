@@ -8,9 +8,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'google_login_button.dart';
 
 class LoginForm extends StatefulWidget {
-  
-
-  LoginForm({Key key,y});
+  LoginForm({Key key, y});
 
   @override
   _LoginFormState createState() => _LoginFormState();
@@ -18,9 +16,9 @@ class LoginForm extends StatefulWidget {
 
 class _LoginFormState extends State<LoginForm>
     with SingleTickerProviderStateMixin {
-
   RandomParticleBehaviour _particleBehaviour = new RandomParticleBehaviour();
-  ParticleOptions _particleOptions = new ParticleOptions(baseColor: Color(0xFF70DCA9));
+  ParticleOptions _particleOptions =
+      new ParticleOptions(baseColor: Color(0xFF70DCA9));
 
   @override
   void initState() {
@@ -80,10 +78,13 @@ class _LoginFormState extends State<LoginForm>
                 ),
                 Text(
                   '4lchemy',
-                  style: GoogleFonts.griffy(),
+                  style: GoogleFonts.griffy(color: Colors.white),
                   textScaleFactor: 5,
                 ),
-                GoogleLoginButton(),
+                Padding(
+                  padding: const EdgeInsets.all(18.0),
+                  child: GoogleLoginButton(),
+                ),
                 SizedBox(
                   height: MediaQuery.of(context).size.height * 0.05,
                 ),

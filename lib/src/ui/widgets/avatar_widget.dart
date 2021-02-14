@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 class AvatarWidget extends StatelessWidget {
   final String photoUrl;
   const AvatarWidget({@required this.photoUrl});
-  
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(color: Theme.of(context).accentColor, shape: BoxShape.circle),
-      padding: EdgeInsets.all(1),
+      decoration:
+          BoxDecoration(color: Colors.teal[100], shape: BoxShape.circle),
+      padding: EdgeInsets.all(2.5),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(25),
         child: Image.network(

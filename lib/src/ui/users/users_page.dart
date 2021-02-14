@@ -72,28 +72,28 @@ class _UsersPageState extends State<UsersPage> {
               backgroundColor: Colors.white,
               icon: Icon(
                 Icons.supervised_user_circle,
-                color: Colors.white,
+                color: Colors.teal,
               ),
               activeIcon:
-                  Icon(Icons.supervised_user_circle, color: Colors.white),
+                  Icon(Icons.supervised_user_circle, color: Colors.teal[100]),
               title: Text(
                 "Usuarios",
-                style: GoogleFonts.openSans(color: Colors.white),
+                style: GoogleFonts.openSans(color: Colors.teal[100]),
                 textScaleFactor: 1.2,
               )),
           BubbleBottomBarItem(
-              backgroundColor: Colors.red,
+              backgroundColor: Colors.white,
               icon: Icon(
                 Icons.favorite_border,
-                color: Colors.redAccent,
+                color: Colors.amberAccent,
               ),
               activeIcon: Icon(
                 Icons.favorite_border,
-                color: Colors.redAccent,
+                color: Colors.amberAccent[100],
               ),
               title: Text(
                 "Favoritos",
-                style: GoogleFonts.openSans(color: Colors.redAccent),
+                style: GoogleFonts.openSans(color: Colors.amberAccent[100]),
                 textScaleFactor: 1.2,
               )),
         ],

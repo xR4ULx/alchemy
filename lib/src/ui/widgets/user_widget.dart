@@ -52,7 +52,7 @@ class UserWidget extends StatelessWidget {
                       spreadRadius: 0.2,
                       color:
                           isFollower(snapshot.data.documents[index]['follows'])
-                              ? Colors.tealAccent
+                              ? Colors.amberAccent
                               : Colors.transparent)
                 ],
               ),
@@ -60,7 +60,7 @@ class UserWidget extends StatelessWidget {
                 shape: new RoundedRectangleBorder(
                     borderRadius: new BorderRadius.circular(8.0)),
                 padding: EdgeInsets.all(12),
-                color: Theme.of(context).accentColor.withOpacity(0.2),
+                color: Theme.of(context).primaryColor.withOpacity(0.1),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
