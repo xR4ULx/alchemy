@@ -7,7 +7,7 @@ class GoogleLoginButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GoogleSignInButton(
-      borderRadius: 32,
+      borderRadius: 8,
       splashColor: Colors.transparent,
       onPressed: () {
         Scaffold.of(context).showSnackBar(SnackBar(

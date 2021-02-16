@@ -53,6 +53,7 @@ class _UsersPageState extends State<UsersPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).primaryColor,
       appBar: SearchAppBarWidget(
           appBarController: appBarController, wizard: widget.wizard),
       body: _children[_currentIndex],
@@ -72,13 +73,13 @@ class _UsersPageState extends State<UsersPage> {
               backgroundColor: Colors.white,
               icon: Icon(
                 Icons.supervised_user_circle,
-                color: Colors.teal,
+                color: Colors.white,
               ),
               activeIcon:
-                  Icon(Icons.supervised_user_circle, color: Colors.teal[100]),
+                  Icon(Icons.supervised_user_circle, color: Colors.white),
               title: Text(
                 "Usuarios",
-                style: GoogleFonts.openSans(color: Colors.teal[100]),
+                style: GoogleFonts.openSans(color: Colors.white),
                 textScaleFactor: 1.2,
               )),
           BubbleBottomBarItem(

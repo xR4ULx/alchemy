@@ -45,14 +45,19 @@ class UserWidget extends StatelessWidget {
           children: <Widget>[
             Container(
               decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+                gradient: LinearGradient(colors: [
+                  Theme.of(context).primaryColor,
+                  Theme.of(context).accentColor
+                ]),
                 boxShadow: [
                   BoxShadow(
-                      offset: const Offset(0.0, .0),
-                      blurRadius: 26.0,
-                      spreadRadius: 0.2,
+                      offset: const Offset(0.2, 0.2),
+                      blurRadius: 5,
+                      spreadRadius: 1.5,
                       color:
                           isFollower(snapshot.data.documents[index]['follows'])
-                              ? Colors.amberAccent
+                              ? Colors.amber
                               : Colors.transparent)
                 ],
               ),

@@ -35,6 +35,7 @@ class _RootPageState extends State<RootPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).primaryColor,
       body: BlocProvider<GameBloc>(
         create: (context) => GameBloc(),
         child: BlocBuilder<GameBloc, GameState>(

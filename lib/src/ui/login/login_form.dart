@@ -81,17 +81,20 @@ class _LoginFormState extends State<LoginForm>
                   style: GoogleFonts.griffy(color: Colors.white),
                   textScaleFactor: 5,
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(18.0),
-                  child: GoogleLoginButton(),
-                ),
                 SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.05,
+                  height: MediaQuery.of(context).size.height * 0.02,
                 ),
                 Image(
                   alignment: Alignment.centerLeft,
                   image: AssetImage("assets/text.png"),
                   width: MediaQuery.of(context).size.width / 2.7,
+                ),
+                SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.04,
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(18.0),
+                  child: GoogleLoginButton(),
                 ),
               ],
             )));

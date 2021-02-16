@@ -7,8 +7,7 @@ class AvatarWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration:
-          BoxDecoration(color: Colors.teal[100], shape: BoxShape.circle),
+      decoration: BoxDecoration(color: Colors.white, shape: BoxShape.circle),
       padding: EdgeInsets.all(2.5),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(25),

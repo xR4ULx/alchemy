@@ -10,17 +10,16 @@ class NameWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.end,
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
+      children: [
         Text(
           displayName.length > 15 ? displayName.substring(0, 15) : displayName,
-          style: GoogleFonts.openSans(),
+          style: GoogleFonts.openSans(color: Colors.white),
         ),
         Text(
           'Potions: $wins',
-          style: GoogleFonts.openSans(),
-        )
+          style: GoogleFonts.openSans(color: Colors.white),
+        ),
       ],
     );
   }
