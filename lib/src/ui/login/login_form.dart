@@ -31,7 +31,7 @@ class _LoginFormState extends State<LoginForm>
     return BlocListener<LoginBloc, LoginState>(listener: (context, state) {
       // tres casos, tres if:
       if (state.isFailure) {
-        Scaffold.of(context)
+        ScaffoldMessenger.of(context)
           ..hideCurrentSnackBar()
           ..showSnackBar(
             SnackBar(
@@ -44,7 +44,7 @@ class _LoginFormState extends State<LoginForm>
           );
       }
       if (state.isSubmitting) {
-        Scaffold.of(context)
+        ScaffoldMessenger.of(context)
           ..hideCurrentSnackBar()
           ..showSnackBar(SnackBar(
             content: Row(
@@ -64,40 +64,48 @@ class _LoginFormState extends State<LoginForm>
         return AnimatedBackground(
             behaviour: _particleBehaviour,
             vsync: this,
-            child: Center(
-                child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Image(
-                  image: AssetImage("assets/pocion.png"),
-                  width: MediaQuery.of(context).size.width / 1.7,
-                ),
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.02,
-                ),
-                Text(
-                  '4lchemy',
-                  style: GoogleFonts.griffy(color: Colors.white),
-                  textScaleFactor: 5,
-                ),
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.02,
-                ),
-                Image(
-                  alignment: Alignment.centerLeft,
-                  image: AssetImage("assets/text.png"),
-                  width: MediaQuery.of(context).size.width / 2.7,
-                ),
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.04,
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(18.0),
-                  child: GoogleLoginButton(),
-                ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Center(
+                    child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Image(
+                      image: AssetImage("assets/pocion.png"),
+                      width: MediaQuery.of(context).size.width / 1.7,
+                    ),
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.02,
+                    ),
+                    Text(
+                      'Alchemy',
+                      style: GoogleFonts.griffy(color: Colors.amber),
+                      textScaleFactor: 5,
+                    ),
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.05,
+                    ),
+                    GoogleLoginButton(),
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.05,
+                    ),
+                  ],
+                )),
+                Container(
+                  alignment: Alignment.bottomRight,
+                  child:
+                    Padding(
+                      padding: const EdgeInsets.only(right: 12.0),
+                      child: Image(
+                        image: AssetImage("assets/textamber.png"),
+                        height: 80,
+                      ),
+                    ),
+                  )
               ],
-            )));
+            ));
       },
     ));
   }

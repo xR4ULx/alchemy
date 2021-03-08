@@ -57,6 +57,7 @@ class _RootPageState extends State<RootPage> {
               return Messages(
                   peerId: state.peerId,
                   peerAvatar: state.peerAvatar,
+                  peerToken: state.peerToken,
                   wizard: blink());
             }
           },

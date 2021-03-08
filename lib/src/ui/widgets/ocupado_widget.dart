@@ -13,22 +13,14 @@ class OcupadoWidget extends StatelessWidget {
               offset: const Offset(0.0, .0),
               blurRadius: 26.0,
               spreadRadius: 0.2,
-              color: Colors.red,
+              color: Colors.redAccent,
             )
           ],
         ),
-        child: Column(
-          children: <Widget>[
-            Image(
-              image: AssetImage("assets/magia.png"),
-              width: 45,
-            ),
-            Text(
-              'Ocupado',
-              style: GoogleFonts.griffy(),
-              textScaleFactor: 1,
-            )
-          ],
+        child: Text(
+          'Ocupado',
+          style: GoogleFonts.griffy(),
+          textScaleFactor: 1,
         ));
   }
 }

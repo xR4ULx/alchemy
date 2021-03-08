@@ -1,4 +1,4 @@
-import 'package:animated_background/animated_background.dart';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -46,7 +46,7 @@ class _PeoplePageState extends State<PeoplePage> {
                 if (!snapshot.hasData) {
                   return Center(
                     child: CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.purple),
+                      valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).accentColor),
                     ),
                   );
                 } else {
@@ -61,6 +61,7 @@ class _PeoplePageState extends State<PeoplePage> {
                                 index: index,
                                 wizard: blink(),
                                 follows: false,
+                                notRead: blink().userRepository.getNotRead(blink().user.uid, snapshot.data.documents[index]['uid']),
                               ),
                     itemCount: snapshot.data.documents.length,
                   );

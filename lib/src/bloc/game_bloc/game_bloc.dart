@@ -65,7 +65,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     }
 
     if (event is EChat) {
-      yield* _mapGameToChat(event.peerId, event.peerAvatar);
+      yield* _mapGameToChat(event.peerId, event.peerAvatar, event.peerToken);
     }
   }
 
@@ -85,7 +85,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     yield SGame();
   }
 
-  Stream<GameState> _mapGameToChat(peerId, peerAvatar) async* {
-    yield SChat(peerId: peerId, peerAvatar: peerAvatar);
+  Stream<GameState> _mapGameToChat(peerId, peerAvatar, peerToken) async* {
+    yield SChat(peerId: peerId, peerAvatar: peerAvatar, peerToken: peerToken);
   }
 }

@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:animated_background/animated_background.dart';
 import 'package:alchemy/src/util/const.dart';
+import 'package:animated_background/animated_background.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -19,20 +19,24 @@ import '../../services/wizard.dart';
 class Messages extends StatelessWidget {
   final String peerId;
   final String peerAvatar;
+  final String peerToken;
   final Wizard wizard;
 
   Messages(
       {Key key,
-      @required this.peerId,
-      @required this.peerAvatar,
-      @required this.wizard})
-      : super(key: key);
+        @required this.peerId,
+        @required this.peerAvatar,
+        @required this.peerToken,
+        @required this.wizard}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
       body: new MessagesScreen(
-          peerId: peerId, peerAvatar: peerAvatar, wizard: wizard),
+          peerId: peerId,
+          peerAvatar: peerAvatar,
+          peerToken: peerToken,
+          wizard: wizard),
     );
   }
 }
@@ -40,38 +44,51 @@ class Messages extends StatelessWidget {
 class MessagesScreen extends StatefulWidget {
   final String peerId;
   final String peerAvatar;
+  final String peerToken;
   final Wizard wizard;
 
   MessagesScreen(
       {Key key,
-      @required this.peerId,
-      @required this.peerAvatar,
-      @required this.wizard})
-      : super(key: key);
+        @required this.peerId,
+        @required this.peerAvatar,
+        @required this.peerToken,
+        @required this.wizard}) : super(key: key);
 
   @override
   State createState() => new MessagesScreenState(
-      peerId: peerId, peerAvatar: peerAvatar, wizard: wizard);
+      peerId: peerId,
+      peerAvatar: peerAvatar,
+      peerToken: peerToken,
+      wizard: wizard);
 }
 
-class MessagesScreenState extends State<MessagesScreen> {
+class MessagesScreenState extends State<MessagesScreen> with SingleTickerProviderStateMixin {
+
+  RandomParticleBehaviour _particleBehaviour = new RandomParticleBehaviour();
+  ParticleOptions _particleOptions = new ParticleOptions(baseColor: Color(0xFF70DCA9));
+
+
+
+  final String peerId;
+  final String peerAvatar;
+  final String peerToken;
+  final Wizard wizard;
+
   MessagesScreenState(
       {Key key,
-      @required this.peerId,
-      @required this.peerAvatar,
-      @required this.wizard});
+        @required this.peerId,
+        @required this.peerAvatar,
+        @required this.peerToken,
+        @required this.wizard});
 
   MessagesProvider messagesProvider;
 
-  final Wizard wizard;
 
   Wizard blink() {
     return widget.wizard;
   }
 
   //FirebaseService _fs;
-  String peerId;
-  String peerAvatar;
 
   var listMessage;
   String groupChatId;
@@ -89,6 +106,9 @@ class MessagesScreenState extends State<MessagesScreen> {
   @override
   void initState() {
     super.initState();
+
+    _particleBehaviour.options = _particleOptions;
+
     //_fs = GetIt.I.get<FirebaseService>();
     messagesProvider = new MessagesProvider(peerId, blink().user.uid);
     focusNode.addListener(onFocusChange);
@@ -99,6 +119,44 @@ class MessagesScreenState extends State<MessagesScreen> {
     _imageFile = null;
 
     setState(() {});
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Theme.of(context).primaryColor,
+      appBar: AppBar(
+        leading: BackButton(),
+        title: Text('Alchemy Chat',
+            style: GoogleFonts.griffy(color: Colors.white)),
+      ),
+      body: AnimatedBackground(
+        behaviour: _particleBehaviour,
+        vsync: this,
+        child: WillPopScope(
+          child: Stack(
+            children: <Widget>[
+              Column(
+                children: <Widget>[
+                  // List of messages
+                  buildListMessage(),
+
+                  // Sticker
+                  (isShowSticker ? buildSticker() : Container()),
+
+                  // Input content
+                  buildInput(),
+                ],
+              ),
+
+              // Loading
+              buildLoading()
+            ],
+          ),
+          onWillPop: onBackPress,
+        ),
+      ),
+    );
   }
 
   void onFocusChange() {
@@ -151,12 +209,11 @@ class MessagesScreenState extends State<MessagesScreen> {
           content: content,
           type: type);
 
-      messagesProvider.sendMessage(msg);
+      messagesProvider.sendMessage(msg, widget.peerToken, blink().user.displayName);
 
       listScrollController.animateTo(0.0,
           duration: Duration(milliseconds: 300), curve: Curves.easeOut);
     } else {
-      //TODO: SNAKBAR
       //Fluttertoast.showToast(msg: 'Nada que enviar.');
     }
 
@@ -176,10 +233,10 @@ class MessagesScreenState extends State<MessagesScreen> {
                     document['content'],
                     style: TextStyle(color: primaryColor, fontSize: 14),
                   ),
-                  padding: EdgeInsets.fromLTRB(15.0, 10.0, 15.0, 10.0),
+                  padding: EdgeInsets.fromLTRB(14.0, 7.0, 14.0, 7.0),
                   width: 200.0,
                   decoration: BoxDecoration(
-                      color: Colors.black12,
+                      color: Theme.of(context).accentColor.withOpacity(0.7),
                       borderRadius: BorderRadius.circular(25.0)),
                   margin: EdgeInsets.only(
                       bottom: isLastMessageRight(index) ? 20.0 : 10.0,
@@ -188,7 +245,7 @@ class MessagesScreenState extends State<MessagesScreen> {
               : document['type'] == 1
                   // Image
                   ? Container(
-                      child: FlatButton(
+                      child: MaterialButton(
                         child: Material(
                           child: CachedNetworkImage(
                             placeholder: (context, url) => Container(
@@ -252,6 +309,8 @@ class MessagesScreenState extends State<MessagesScreen> {
         mainAxisAlignment: MainAxisAlignment.end,
       );
     } else {
+      // Confirmamos los mensajes
+      messagesProvider.readMessage(document['uid']);
       // Left (peer message)
       return Container(
         child: Column(
@@ -288,22 +347,22 @@ class MessagesScreenState extends State<MessagesScreen> {
                           document['content'],
                           style: TextStyle(color: Colors.white, fontSize: 14),
                         ),
-                        padding: EdgeInsets.fromLTRB(15.0, 10.0, 15.0, 10.0),
+                        padding: EdgeInsets.fromLTRB(14.0, 7.0, 14.0, 7.0),
                         width: 200.0,
                         decoration: BoxDecoration(
-                            color: primaryColor,
+                            color: accentColor.withOpacity(0.7),
                             borderRadius: BorderRadius.circular(25.0)),
                         margin: EdgeInsets.only(left: 10.0),
                       )
                     : document['type'] == 1
                         ? Container(
-                            child: FlatButton(
+                            child: MaterialButton(
                               child: Material(
                                 child: CachedNetworkImage(
                                   placeholder: (context, url) => Container(
                                     child: CircularProgressIndicator(
                                       valueColor: AlwaysStoppedAnimation<Color>(
-                                          primaryColor),
+                                          accentColor),
                                     ),
                                     width: 200.0,
                                     height: 200.0,
@@ -367,7 +426,7 @@ class MessagesScreenState extends State<MessagesScreen> {
                           DateTime.fromMillisecondsSinceEpoch(
                               int.parse(document['timestamp']))),
                       style: TextStyle(
-                          color: Colors.black26,
+                          color: greenColor,
                           fontSize: 12.0,
                           fontStyle: FontStyle.italic),
                     ),
@@ -420,38 +479,7 @@ class MessagesScreenState extends State<MessagesScreen> {
     return Future.value(false);
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: BackButton(),
-        title: Text('Alchemy Chat',
-            style: GoogleFonts.griffy(color: Colors.white)),
-      ),
-      body: WillPopScope(
-        child: Stack(
-          children: <Widget>[
-            Column(
-              children: <Widget>[
-                // List of messages
-                buildListMessage(),
 
-                // Sticker
-                (isShowSticker ? buildSticker() : Container()),
-
-                // Input content
-                buildInput(),
-              ],
-            ),
-
-            // Loading
-            buildLoading()
-          ],
-        ),
-        onWillPop: onBackPress,
-      ),
-    );
-  }
 
   Widget buildSticker() {
     return Container(
@@ -459,7 +487,7 @@ class MessagesScreenState extends State<MessagesScreen> {
         children: <Widget>[
           Row(
             children: <Widget>[
-              FlatButton(
+              MaterialButton(
                 onPressed: () => onSendMessage('mimi1', 2),
                 child: new Image.asset(
                   'assets/gifs/mimi1.gif',
@@ -468,7 +496,7 @@ class MessagesScreenState extends State<MessagesScreen> {
                   fit: BoxFit.cover,
                 ),
               ),
-              FlatButton(
+              MaterialButton(
                 onPressed: () => onSendMessage('mimi2', 2),
                 child: new Image.asset(
                   'assets/gifs/mimi2.gif',
@@ -477,7 +505,7 @@ class MessagesScreenState extends State<MessagesScreen> {
                   fit: BoxFit.cover,
                 ),
               ),
-              FlatButton(
+              MaterialButton(
                 onPressed: () => onSendMessage('mimi3', 2),
                 child: new Image.asset(
                   'assets/gifs/mimi3.gif',
@@ -491,7 +519,7 @@ class MessagesScreenState extends State<MessagesScreen> {
           ),
           Row(
             children: <Widget>[
-              FlatButton(
+              MaterialButton(
                 onPressed: () => onSendMessage('mimi4', 2),
                 child: new Image.asset(
                   'assets/gifs/mimi4.gif',
@@ -500,7 +528,7 @@ class MessagesScreenState extends State<MessagesScreen> {
                   fit: BoxFit.cover,
                 ),
               ),
-              FlatButton(
+              MaterialButton(
                 onPressed: () => onSendMessage('mimi5', 2),
                 child: new Image.asset(
                   'assets/gifs/mimi5.gif',
@@ -509,7 +537,7 @@ class MessagesScreenState extends State<MessagesScreen> {
                   fit: BoxFit.cover,
                 ),
               ),
-              FlatButton(
+              MaterialButton(
                 onPressed: () => onSendMessage('mimi6', 2),
                 child: new Image.asset(
                   'assets/gifs/mimi6.gif',
@@ -523,7 +551,7 @@ class MessagesScreenState extends State<MessagesScreen> {
           ),
           Row(
             children: <Widget>[
-              FlatButton(
+              MaterialButton(
                 onPressed: () => onSendMessage('mimi7', 2),
                 child: new Image.asset(
                   'assets/gifs/mimi7.gif',
@@ -532,7 +560,7 @@ class MessagesScreenState extends State<MessagesScreen> {
                   fit: BoxFit.cover,
                 ),
               ),
-              FlatButton(
+              MaterialButton(
                 onPressed: () => onSendMessage('mimi8', 2),
                 child: new Image.asset(
                   'assets/gifs/mimi8.gif',
@@ -541,7 +569,7 @@ class MessagesScreenState extends State<MessagesScreen> {
                   fit: BoxFit.cover,
                 ),
               ),
-              FlatButton(
+              MaterialButton(
                 onPressed: () => onSendMessage('mimi9', 2),
                 child: new Image.asset(
                   'assets/gifs/mimi9.gif',
@@ -558,7 +586,7 @@ class MessagesScreenState extends State<MessagesScreen> {
       ),
       decoration: new BoxDecoration(
           border: new Border(
-              top: new BorderSide(color: Colors.black12, width: 0.8)),
+              top: new BorderSide(color: greenColor, width: 0.8)),
           color: Colors.white),
       padding: EdgeInsets.all(5.0),
       height: 180.0,
@@ -586,36 +614,39 @@ class MessagesScreenState extends State<MessagesScreen> {
           // Button send image
           Material(
             child: new Container(
+              decoration: BoxDecoration(color: Theme.of(context).primaryColor),
               margin: new EdgeInsets.symmetric(horizontal: 1.0),
               child: new IconButton(
                 icon: new Icon(Icons.image),
                 onPressed: getImage,
-                color: primaryColor,
+                color: Colors.white,
               ),
             ),
-            color: Colors.white,
+            color: Theme.of(context).primaryColor,
           ),
           Material(
             child: new Container(
+              decoration: BoxDecoration(color: Theme.of(context).primaryColor),
               margin: new EdgeInsets.symmetric(horizontal: 1.0),
               child: new IconButton(
                 icon: new Icon(Icons.face),
                 onPressed: getSticker,
-                color: primaryColor,
+                color: Colors.white,
               ),
             ),
-            color: Colors.white,
+            color: Theme.of(context).primaryColor,
           ),
 
           // Edit text
           Flexible(
             child: Container(
+              decoration: BoxDecoration(color: Theme.of(context).primaryColor),
               child: TextField(
-                style: TextStyle(color: Colors.black, fontSize: 14.0),
+                style: TextStyle(color: Theme.of(context).accentColor, fontSize: 14.0),
                 controller: textEditingController,
                 decoration: InputDecoration.collapsed(
                   hintText: 'Type your message...',
-                  hintStyle: TextStyle(color: Colors.black12, fontSize: 14),
+                  hintStyle: TextStyle(color: Colors.white, fontSize: 14),
                 ),
                 focusNode: focusNode,
               ),
@@ -625,14 +656,15 @@ class MessagesScreenState extends State<MessagesScreen> {
           // Button send message
           Material(
             child: new Container(
+              decoration: BoxDecoration(color: Theme.of(context).primaryColor),
               margin: new EdgeInsets.symmetric(horizontal: 8.0),
               child: new IconButton(
                 icon: new Icon(Icons.send),
                 onPressed: () => onSendMessage(textEditingController.text, 0),
-                color: primaryColor,
+                color: Colors.white,
               ),
             ),
-            color: Colors.white,
+            color: Theme.of(context).primaryColor,
           ),
         ],
       ),
@@ -640,8 +672,8 @@ class MessagesScreenState extends State<MessagesScreen> {
       height: 50.0,
       decoration: new BoxDecoration(
           border: new Border(
-              top: new BorderSide(color: Colors.black12, width: 0.8)),
-          color: Colors.white),
+              top: new BorderSide(color: Theme.of(context).primaryColor, width: 0.8)),
+          color: Theme.of(context).primaryColor),
     );
   }
 

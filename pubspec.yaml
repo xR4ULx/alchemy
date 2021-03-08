@@ -15,7 +15,7 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 2.0.0+1
+version: 12.0.0+12
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
@@ -23,35 +23,41 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+
+
+  # The following adds the Cupertino Icons font to your application.
+  # Use with the CupertinoIcons class for iOS style icons.
+  cupertino_icons: ^0.1.3
+
+  #Personal Dependencies
+  cached_network_image: ^2.2.0+1
+  animated_background: ^1.0.5
+  google_fonts: ^1.1.0
+  device_info: ^0.4.2+4
+  get_it: ^4.0.1
+  socket_io_client: ^0.9.7+1
+  awesome_dialog: ^1.1.2
+  google_sign_in: ^4.4.4
+  firebase_core: ^0.4.5
+  firebase_auth: ^0.16.1
+  firebase_database: ^3.1.6
+  firebase_analytics: ^5.0.11
+  firebase_storage: ^3.1.6
+  cloud_firestore: ^0.13.7
+  bloc: ^4.0.0
+  flutter_bloc: ^4.0.0
   flutter_incall_manager:
     git: https://github.com/GioviQ/flutter-incall-manager.git
-  animated_background: ^1.0.5
-  awesome_dialog: ^1.1.2
-  bloc: ^4.0.0
-  bubble_bottom_bar: ^1.2.0
-  cached_network_image: ^2.2.0+1
-  cloud_firestore: ^0.13.7
-  cupertino_icons: ^0.1.3
-  device_info: ^0.4.2+4
-  equatable: null
-  firebase_analytics: ^5.0.11
-  firebase_auth: ^0.16.1
-  firebase_core: ^0.4.5
-  firebase_database: ^3.1.6
-  firebase_messaging: ^6.0.16
-  firebase_storage: ^3.1.6
-  flutter_auth_buttons: null
-  flutter_bloc: ^4.0.0
-  flutter_local_notifications: ^1.4.4+2
-  get_it: ^4.0.1
-  google_fonts: ^1.1.0
-  google_sign_in: ^4.4.4
-  image_picker: ^0.6.5
-  intl: ^0.16.1
-  meta: null
-  rxdart: null
+  equatable:
+  meta:
+  rxdart:
+  flutter_auth_buttons:
   simple_search_bar: ^0.1.7
-  socket_io_client: ^0.9.7+1
+  bubble_bottom_bar: ^1.2.0
+  firebase_messaging: ^6.0.16
+  flutter_local_notifications: ^1.4.4+2
+  image_picker: ^0.6.5
+  http: ^0.12.0+2
 
 dev_dependencies:
   flutter_test:

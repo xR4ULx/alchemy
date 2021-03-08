@@ -13,10 +13,10 @@ class InvitarWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return RaisedButton(
+    return MaterialButton(
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(18.0),
-          side: BorderSide(color: Colors.red)),
+          side: BorderSide(color: Colors.deepPurple)),
       onPressed: () {
         if (snapshot.data.documents[index]['isActive'] &&
             snapshot.data.documents[index]['player'] == '') {

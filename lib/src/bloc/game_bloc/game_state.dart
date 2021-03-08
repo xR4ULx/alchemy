@@ -29,7 +29,8 @@ class SGame extends GameState {
 class SChat extends GameState {
   final String peerId;
   final String peerAvatar;
-  SChat({@required this.peerId, @required this.peerAvatar});
+  final String peerToken;
+  SChat({@required this.peerId, @required this.peerAvatar, @required this.peerToken});
   @override
   String toString() => 'In Chat';
 }

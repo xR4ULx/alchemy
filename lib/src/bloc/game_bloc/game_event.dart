@@ -20,5 +20,6 @@ class EGame extends GameEvent {}
 class EChat extends GameEvent {
   final String peerId;
   final String peerAvatar;
-  EChat({@required this.peerId, @required this.peerAvatar});
+  final String peerToken;
+  EChat({@required this.peerId, @required this.peerAvatar, @required this.peerToken});
 }

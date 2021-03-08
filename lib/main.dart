@@ -5,12 +5,15 @@ import 'package:alchemy/src/bloc/simple_bloc_delegate.dart';
 import 'package:alchemy/src/ui/login/login_screen.dart';
 import 'package:alchemy/src/ui/root_page.dart';
 import 'package:alchemy/src/ui/splash_screen.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 
 import 'package:alchemy/src/services/wizard.dart';
+
+//import 'generated_plugin_registrant.dart';
 
 GetIt getIt = GetIt.instance;
 
@@ -27,8 +30,7 @@ void main() {
   final Wizard wizard = GetIt.I.get<Wizard>();
 
   runApp(BlocProvider(
-    create: (context) =>
-        AuthenticationBloc(wizard: wizard)..add(AppStarted()),
+    create: (context) => AuthenticationBloc(wizard: wizard)..add(AppStarted()),
     child: App(wizard: wizard),
   ));
 }
@@ -43,15 +45,16 @@ class App extends StatefulWidget {
 }
 
 class _AppState extends State<App> with WidgetsBindingObserver {
-
-  Wizard blink(){
+  Wizard blink() {
     return widget.wizard;
   }
 
   @override
   void initState() {
     super.initState();
-    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp,]);
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+    ]);
     WidgetsBinding.instance.addObserver(this);
   }
 
@@ -101,9 +104,7 @@ class _AppState extends State<App> with WidgetsBindingObserver {
             return SplashScreen();
           }
           if (state is Authenticated) {
-            return RootPage(
-                name: state.displayName,
-                wizard: blink());
+            return RootPage(name: state.displayName, wizard: blink());
           }
           if (state is Unauthenticated) {
             return LoginScreen(

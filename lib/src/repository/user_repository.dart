@@ -4,10 +4,11 @@ import 'package:alchemy/src/models/user_model.dart';
 import 'package:alchemy/src/util/signaling.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:meta/meta.dart';
 
-class UserRepository {
+class UserRepository{
   User user;
   Signaling signaling;
   final FirebaseAuth _firebaseAuth;
@@ -24,10 +25,11 @@ class UserRepository {
 
   //PROVIDER
   QuerySnapshot users;
-  final _usersStreamController = StreamController<QuerySnapshot>.broadcast();
 
+  final _usersStreamController = StreamController<QuerySnapshot>.broadcast();
   Function(QuerySnapshot) get _usersSink => _usersStreamController.sink.add;
   Stream<QuerySnapshot> get usersStream => _usersStreamController.stream;
+
 
   void disposeStream() {
     _usersStreamController?.close();
@@ -54,6 +56,21 @@ class UserRepository {
         .snapshots()) {
       _usersSink(snap);
     }
+  }
+
+  Stream<QuerySnapshot> getNotRead(String idFrom, String idTo){
+    String _groupChatId;
+    if (idFrom.hashCode <= idTo.hashCode) {
+      _groupChatId = '$idFrom-$idTo';
+    } else {
+      _groupChatId = '$idTo-$idFrom';
+    }
+
+    return Firestore.instance
+        .collection('message')
+        .document(_groupChatId)
+        .collection('messages').where('status', isEqualTo: false)
+        .where('idFrom',isEqualTo: idTo).snapshots();
   }
 
   Future<String> getPhotoUrl(String playerRequest) async {
@@ -100,9 +117,9 @@ class UserRepository {
           .document(followid)
           .updateData({'follows': follows});
     }
-    if(isfollow){
+    if (isfollow) {
       getFollows();
-    }else{
+    } else {
       getAllUsers();
     }
   }
@@ -125,9 +142,9 @@ class UserRepository {
           .document(followid)
           .updateData({'follows': follows});
     }
-    if(isfollow){
+    if (isfollow) {
       getFollows();
-    }else{
+    } else {
       getAllUsers();
     }
   }
@@ -150,9 +167,9 @@ class UserRepository {
           .document(avisoid)
           .updateData({'avisos': avisos});
     }
-    if(isfollow){
+    if (isfollow) {
       getFollows();
-    }else{
+    } else {
       getAllUsers();
     }
   }
@@ -173,12 +190,12 @@ class UserRepository {
   // SignInWithGoogle
   Future<FirebaseUser> signInWithGoogle() async {
     final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
-    final GoogleSignInAuthentication googleAuth =
-        await googleUser.authentication;
-    final AuthCredential credential = GoogleAuthProvider.getCredential(
-        accessToken: googleAuth.accessToken, idToken: googleAuth.idToken);
+    final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+    final AuthCredential credential = GoogleAuthProvider.getCredential(accessToken: googleAuth.accessToken, idToken: googleAuth.idToken);
 
-    return (await _firebaseAuth.signInWithCredential(credential)).user;
+    await _firebaseAuth.signInWithCredential(credential);
+    final currentUser = await _firebaseAuth.currentUser();
+    return currentUser;
   }
 
   // SignOut
@@ -190,8 +207,12 @@ class UserRepository {
   // Esta logueado?
   Future<bool> isSignedIn() async {
     final currentUser = await _firebaseAuth.currentUser();
-    setActive(true);
-    return currentUser != null;
+    if (currentUser != null) {
+      await setActive(true);
+      return true;
+    } else {
+      return false;
+    }
   }
 
   Future<void> setActive(bool active) async {
@@ -224,6 +245,7 @@ class UserRepository {
               .document(_firebaseUser.uid)
               .setData(user.toJson());
         } else {
+
           Firestore.instance
               .collection('users')
               .document(_firebaseUser.uid)
@@ -238,6 +260,7 @@ class UserRepository {
           user.isActive = documents[0]['isActive'];
           user.follows = documents[0]['follows'];
           user.avisos = [""];
+
         }
       }
     } else {
