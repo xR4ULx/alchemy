@@ -106,7 +106,6 @@ class MessagesScreenState extends State<MessagesScreen> with SingleTickerProvide
   @override
   void initState() {
     super.initState();
-
     _particleBehaviour.options = _particleOptions;
 
     //_fs = GetIt.I.get<FirebaseService>();
@@ -196,7 +195,7 @@ class MessagesScreenState extends State<MessagesScreen> with SingleTickerProvide
     });
   }
 
-  void onSendMessage(String content, int type) {
+  void onSendMessage(String content, int type) async{
     // type: 0 = text, 1 = image, 2 = sticker
     if (content.trim() != '') {
       textEditingController.clear();
@@ -209,7 +208,13 @@ class MessagesScreenState extends State<MessagesScreen> with SingleTickerProvide
           content: content,
           type: type);
 
-      messagesProvider.sendMessage(msg, widget.peerToken, blink().user.displayName);
+      // If user not is active send Notification
+      bool isActive = await widget.wizard.userRepository.isActive(peerId);
+      String token = "";
+      if(!isActive){
+        token = widget.peerToken;
+      }
+      messagesProvider.sendMessage(msg, token, blink().user.displayName);
 
       listScrollController.animateTo(0.0,
           duration: Duration(milliseconds: 300), curve: Curves.easeOut);

@@ -85,7 +85,8 @@ class _AppState extends State<App> with WidgetsBindingObserver {
       theme: ThemeData(
           primaryColor: Color(0xFF1D1E33),
           accentColor: Color(0xFF70DCA9),
-          primaryColorLight: Colors.amber),
+          primaryColorLight: Color(0xffCD7A2F),
+      ),
       home: BlocBuilder<AuthenticationBloc, AuthenticationState>(
         builder: (context, state) {
 

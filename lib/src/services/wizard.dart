@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:alchemy/src/models/user_model.dart';

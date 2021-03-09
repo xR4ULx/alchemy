@@ -48,12 +48,14 @@ class MessagesProvider {
       );
     });
 
-    sendPushNotification(token, Notification(title: nameFrom ,body: message.content ));
+    if(token != ""){
+      sendPushNotification(token, Notification(title: nameFrom ,body: message.content ));
+    }
   }
 
   void sendPushNotification(String token, Notification notification) async{
 
-    var response =  http.post(
+    http.post(
       Uri.https('fcm.googleapis.com', 'fcm/send'),
       headers: <String, String>{
         'Authorization': 'key=AAAAkWZPQoM:APA91bFGUnqNNsM3eQjmR-8K75Xk4olovQD8ithk5FNErqmTOXP3SPodU_bd3kBbql0U_Tx6sUe9bvEnhrMr23Hmmq4OOdf1LTcvRW_TNaduN3Vq6gcOSLKPjn4klnBiE08cjoHW0tlL',

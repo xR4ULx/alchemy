@@ -171,16 +171,6 @@ class UserRepository {
 
   Future<String> getPhotoUrl(String playerRequest) async {
 
-
-    await for (QuerySnapshot snap in Firestore.instance
-        .collection('users')
-        .where('displayName', isEqualTo: playerRequest)
-        .snapshots()) {
-
-      return snap.documents[0]['photoUrl'];
-    }
-
-    /*
     final QuerySnapshot docs = await Firestore.instance
         .collection('users')
         .where('displayName', isEqualTo: playerRequest)
@@ -188,7 +178,18 @@ class UserRepository {
     final List<DocumentSnapshot> documents = docs.documents;
 
     return documents[0]['photoUrl'];
-    */
+
+  }
+
+  Future<bool> isActive(String uid) async {
+
+    final QuerySnapshot docs = await Firestore.instance
+        .collection('users')
+        .where('uid', isEqualTo: uid)
+        .getDocuments();
+    final List<DocumentSnapshot> documents = docs.documents;
+
+    return documents[0]['isActive'];
 
   }
 
@@ -295,6 +296,5 @@ class UserRepository {
       _usersSink(snap);
     }
   }
-
 
 }
