@@ -52,9 +52,9 @@ class Signaling {
     });
 
     _socket.on('on-response', (response) {
-      if(response){
-      _incallManager.start();
-      _incallManager.setForceSpeakerphoneOn(flag: ForceSpeakerType.FORCE_ON);
+      if (response) {
+        _incallManager.start();
+        _incallManager.setForceSpeakerphoneOn(flag: ForceSpeakerType.FORCE_ON);
       }
       onResponse(response);
     });

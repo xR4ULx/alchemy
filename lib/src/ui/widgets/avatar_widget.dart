@@ -10,12 +10,12 @@ class AvatarWidget extends StatelessWidget {
       decoration: BoxDecoration(color: Colors.white, shape: BoxShape.circle),
       padding: EdgeInsets.all(2.5),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(25),
-        child: Image.network(
-          photoUrl,
-          width: 45,
-        ),
-      ),
+          borderRadius: BorderRadius.circular(25),
+          child: FadeInImage.assetNetwork(
+            placeholder: 'assets/pocion.png',
+            image: photoUrl,
+            width: 45,
+          )),
     );
   }
 }

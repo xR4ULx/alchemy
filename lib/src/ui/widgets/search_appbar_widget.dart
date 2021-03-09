@@ -73,13 +73,10 @@ class _SearchAppBarWidgetState extends State<SearchAppBarWidget> {
               Expanded(
                 child: Center(
                   child: Container(
-                    width: MediaQuery.of(context).size.aspectRatio * 100,
-                    child: AvatarWidget(
-                        photoUrl: blink().user.photoUrl),
+                    child: AvatarWidget(photoUrl: blink().user.photoUrl),
                   ),
                 ),
               ),
-
             ],
           ),
           actions: <Widget>[

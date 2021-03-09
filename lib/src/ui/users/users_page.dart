@@ -1,5 +1,4 @@
 import 'package:alchemy/src/bloc/authentication_bloc/bloc.dart';
-import 'package:alchemy/src/ui/users/people_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:simple_search_bar/simple_search_bar.dart';
@@ -26,7 +25,14 @@ class _UsersPageState extends State<UsersPage> {
   @override
   void initState() {
     super.initState();
-    blink().userRepository.setActive(true);
+    if(!widget.wizard.userRepository.userIsActive()){
+      blink().userRepository.setActive(true);
+    }
+    blink().userRepository.getAllUsers();
+    blink().user.player = '';
+    blink().user.adversary = '';
+    blink().user.avisos = [""];
+    blink().userRepository.updateUser();
   }
 
   void logOut() {
@@ -40,9 +46,40 @@ class _UsersPageState extends State<UsersPage> {
       backgroundColor: Theme.of(context).primaryColor,
       appBar: SearchAppBarWidget(
           appBarController: appBarController, wizard: widget.wizard),
-      body: PeoplePage(
-        name: widget.name,
-        wizard: blink(),
+      body: Stack(
+        children: <Widget>[
+          // List
+          Container(
+            child: StreamBuilder(
+              stream: blink().userRepository.usersStream,
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return Center(
+                    child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).accentColor),
+                    ),
+                  );
+                } else {
+                  return ListView.builder(
+                    padding: EdgeInsets.all(0.5),
+                    itemBuilder: (context, index) =>
+                    (snapshot.data.documents[index]['uid'] ==
+                        blink().user.uid)
+                        ? Container()
+                        : UserWidget(
+                      snapshot: snapshot,
+                      index: index,
+                      wizard: blink(),
+                      follows: false,
+                      notRead: blink().userRepository.getNotRead(blink().user.uid, snapshot.data.documents[index]['uid']),
+                    ),
+                    itemCount: snapshot.data.documents.length,
+                  );
+                }
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
