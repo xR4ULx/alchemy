@@ -31,19 +31,22 @@ class AuthenticationBloc
 
   Stream<AuthenticationState> _mapAppStartedToState() async* {
     try {
-      final isSignedIn = await wizard.userRepository.isSignedIn();
-      if (isSignedIn) {
-        final user = await wizard.userRepository.getUser();
-        yield await Future.delayed(Duration(seconds: 5), () {
-          return Authenticated(user);
-        });
+      final _authenticate = await wizard.userRepository.isSignedIn();
+      final _displayName = await wizard.userRepository.getUser();
+
+      if (_authenticate) {
+        if (_displayName != "") {
+          await wizard.userRepository.setActive(true);
+          yield Authenticated(_displayName);
+        } else {
+          yield Unauthenticated();
+        }
       } else {
-        yield await Future.delayed(Duration(seconds: 5), () {
-          return Unauthenticated();
-        });
+        yield Unauthenticated();
       }
     } catch (_) {
       yield Unauthenticated();
+      print("NO AUTENTICADO");
     }
   }
 
@@ -52,7 +55,7 @@ class AuthenticationBloc
   }
 
   Stream<AuthenticationState> _mapLoggedOutToState() async* {
+    await wizard.userRepository.signOut();
     yield Unauthenticated();
-    wizard.userRepository.signOut();
   }
 }

@@ -10,17 +10,25 @@ class NameWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.end,
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
+      children: [
         Text(
-          displayName,
-          style: GoogleFonts.openSans(),
+          displayName.length > 15 ? displayName.substring(0, 15) : displayName,
+          style: GoogleFonts.openSans(color: Colors.white),
         ),
-        Text(
-          'Potions: $wins',
-          style: GoogleFonts.openSans(),
-        )
+        Row(
+          children: <Widget>[
+            Image(
+              image: AssetImage("assets/p2.png"),
+              width: 30,
+            ),
+            Text(
+              wins == null ? "x0" : "x$wins",
+              style: GoogleFonts.griffy(color: Colors.white),
+              textScaleFactor: 1.2,
+            ),
+          ],
+        ),
       ],
     );
   }

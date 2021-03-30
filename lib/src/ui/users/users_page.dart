@@ -1,10 +1,6 @@
 import 'package:alchemy/src/bloc/authentication_bloc/bloc.dart';
-import 'package:alchemy/src/ui/users/friends_page.dart';
-import 'package:alchemy/src/ui/users/people_page.dart';
-import 'package:bubble_bottom_bar/bubble_bottom_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:simple_search_bar/simple_search_bar.dart';
 import 'package:alchemy/src/services/wizard.dart';
 import 'package:alchemy/src/ui/widgets/widgets.dart';
@@ -13,33 +9,30 @@ class UsersPage extends StatefulWidget {
   final String name;
   final Wizard wizard;
 
-  UsersPage(
-      {Key key, @required this.name, @required this.wizard});
+  UsersPage({Key key, @required this.name, @required this.wizard});
   @override
   _UsersPageState createState() => _UsersPageState();
 }
 
 class _UsersPageState extends State<UsersPage> {
 
-  int _currentIndex;
-  final List<Widget> _children = [];
   final AppBarController appBarController = AppBarController();
 
-  Wizard blink(){
+  Wizard blink() {
     return widget.wizard;
   }
 
   @override
   void initState() {
     super.initState();
-    blink().userRepository.setActive(true);
-    _currentIndex = 0;
-    _children.add(PeoplePage(
-      name: widget.name,
-      wizard: blink(),
-    ));
-    _children.add(
-        FriendsPage(name: widget.name, wizard: blink()));
+    if(!widget.wizard.userRepository.userIsActive()){
+      blink().userRepository.setActive(true);
+    }
+    blink().userRepository.getAllUsers();
+    blink().user.player = '';
+    blink().user.adversary = '';
+    blink().user.avisos = [""];
+    blink().userRepository.updateUser();
   }
 
   void logOut() {
@@ -47,81 +40,45 @@ class _UsersPageState extends State<UsersPage> {
     BlocProvider.of<AuthenticationBloc>(context).add(LoggedOut());
   }
 
-  void changePage(int index) {
-    setState(() {
-      _currentIndex = index;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: SearchAppBarWidget(appBarController: appBarController,wizard: widget.wizard),
-      body: _children[_currentIndex],
-      floatingActionButton: Container(
-          decoration: BoxDecoration(
-            boxShadow: [
-              BoxShadow(
-                offset: const Offset(0.4, 0.4),
-                blurRadius: 25,
-                spreadRadius: 2,
-                color: Theme.of(context).accentColor,
-              )
-            ],
-          ),
-          child: FloatingActionButton(
-            onPressed: () {
-              logOut();
-            },
-            backgroundColor: Theme.of(context).primaryColor,
-            child: Icon(
-              Icons.exit_to_app,
-              color: Colors.white,
+      backgroundColor: Theme.of(context).primaryColor,
+      appBar: SearchAppBarWidget(
+          appBarController: appBarController, wizard: widget.wizard),
+      body: Stack(
+        children: <Widget>[
+          // List
+          Container(
+            child: StreamBuilder(
+              stream: blink().userRepository.usersStream,
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return Center(
+                    child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).accentColor),
+                    ),
+                  );
+                } else {
+                  return ListView.builder(
+                    padding: EdgeInsets.all(0.5),
+                    itemBuilder: (context, index) =>
+                    (snapshot.data.documents[index]['uid'] ==
+                        blink().user.uid)
+                        ? Container()
+                        : UserWidget(
+                      snapshot: snapshot,
+                      index: index,
+                      wizard: blink(),
+                      follows: false,
+                      notRead: blink().userRepository.getNotRead(blink().user.uid, snapshot.data.documents[index]['uid']),
+                    ),
+                    itemCount: snapshot.data.documents.length,
+                  );
+                }
+              },
             ),
-          )),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-      bottomNavigationBar: BubbleBottomBar(
-        backgroundColor: Theme.of(context).primaryColor,
-        hasNotch: true,
-        fabLocation: BubbleBottomBarFabLocation.end,
-        opacity: .2,
-        currentIndex: _currentIndex,
-        onTap: changePage,
-        borderRadius: BorderRadius.vertical(
-            top: Radius.circular(
-                15)), //border radius doesn't work when the notch is enabled.
-        elevation: 3,
-        items: <BubbleBottomBarItem>[
-          BubbleBottomBarItem(
-              backgroundColor: Colors.transparent,
-              icon: Icon(
-                Icons.supervised_user_circle,
-                color: Colors.white,
-              ),
-              activeIcon: Icon(
-                Icons.supervised_user_circle,
-                color: Colors.white
-              ),
-              title: Text(
-                "Usuarios",
-                style: GoogleFonts.openSans(color: Colors.white),
-                textScaleFactor: 1.2,
-              )),
-          BubbleBottomBarItem(
-              backgroundColor: Colors.transparent,
-              icon: Icon(
-                Icons.favorite_border,
-                color: Colors.tealAccent,
-              ),
-              activeIcon: Icon(
-                Icons.favorite_border,
-                color: Colors.tealAccent,
-              ),
-              title: Text(
-                "Favoritos",
-                style: GoogleFonts.openSans(color: Colors.tealAccent),
-                textScaleFactor: 1.2,
-              )),
+          ),
         ],
       ),
     );

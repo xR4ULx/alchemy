@@ -10,7 +10,8 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
   RandomParticleBehaviour _particleBehaviour = new RandomParticleBehaviour();
-  ParticleOptions _particleOptions = new ParticleOptions(baseColor: Color(0xFF70DCA9));
+  ParticleOptions _particleOptions =
+      new ParticleOptions(baseColor: Color(0xFF70DCA9));
 
   @override
   void initState() {
@@ -25,41 +26,18 @@ class _SplashScreenState extends State<SplashScreen>
         body: AnimatedBackground(
             behaviour: _particleBehaviour,
             vsync: this,
-            child: Center(
-                child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Image(
-                  image: AssetImage("assets/pocion.png"),
-                  width: MediaQuery.of(context).size.width / 1.7,
-                ),
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.02,
-                ),
-                Text(
-                  '4lchemy',
-                  style: GoogleFonts.griffy(color: Colors.amber),
-                  textScaleFactor: 5,
-                ),
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.05,
-                ),
-                Text(
-                  'Loading ...',
-                  style: GoogleFonts.griffy(color: Colors.amber),
-                  textScaleFactor: 3,
-                ),
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.05,
-                ),
-                Image(
-                  alignment: Alignment.centerLeft,
-                  image: AssetImage("assets/textamber.png"),
-                  width: MediaQuery.of(context).size.width / 2.7,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Center(
+                  child: Image(
+                    fit: BoxFit.fill,
+                    image: AssetImage("assets/pocion.png"),
+                    width: MediaQuery.of(context).size.width / 3,
+                  ),
                 ),
               ],
-            ))) // This trailing comma makes auto-formatting nicer for build methods.
+            )) // This trailing comma makes auto-formatting nicer for build methods.
         );
   }
 }

@@ -7,7 +7,7 @@ class ActiveWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(color: Theme.of(context).accentColor, shape: BoxShape.circle),
+      decoration: BoxDecoration(color: active ? Colors.greenAccent : Colors.redAccent, shape: BoxShape.circle),
       padding: EdgeInsets.all(1),
       child: Container(
         decoration:

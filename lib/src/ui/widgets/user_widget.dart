@@ -1,18 +1,33 @@
 import 'package:alchemy/src/ui/widgets/widgets.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:alchemy/src/services/wizard.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-class UserWidget extends StatelessWidget {
+import '../../bloc/game_bloc/bloc.dart';
+
+class UserWidget extends StatefulWidget {
   final AsyncSnapshot<dynamic> snapshot;
   final int index;
   final Wizard wizard;
   final bool follows;
+  final Stream<QuerySnapshot> notRead;
 
   const UserWidget(
-      {@required this.snapshot, @required this.index, @required this.wizard, @required this.follows});
+      {@required this.snapshot,
+      @required this.index,
+      @required this.wizard,
+      @required this.follows,
+      @required this.notRead});
+
+  @override
+  _UserWidgetState createState() => _UserWidgetState();
+}
+
+class _UserWidgetState extends State<UserWidget> {
 
   bool isFollower(List<dynamic> follows) {
-    final result = follows.where((item) => item == wizard.user.uid).toList();
+    final result = follows.where((item) => item == widget.wizard.user.uid).toList();
     if (result.length == 0) {
       return false;
     } else {
@@ -21,7 +36,7 @@ class UserWidget extends StatelessWidget {
   }
 
   bool isAvisar(List<dynamic> avisos) {
-    final result = avisos.where((item) => item == wizard.user.uid).toList();
+    final result = avisos.where((item) => item == widget.wizard.user.uid).toList();
     if (result.length == 0) {
       return true;
     } else {
@@ -32,28 +47,33 @@ class UserWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        margin: EdgeInsets.all(2),
+        margin: EdgeInsets.all(1),
         padding: EdgeInsets.all(3),
         child: Column(
           children: <Widget>[
             Container(
               decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+                gradient: LinearGradient(colors: [
+                  Theme.of(context).accentColor,
+                  Theme.of(context).primaryColor
+                ]),
                 boxShadow: [
                   BoxShadow(
-                      offset: const Offset(0.0, .0),
-                      blurRadius: 26.0,
-                      spreadRadius: 0.2,
+                      offset: const Offset(0, 0),
+                      blurRadius: 12,
+                      spreadRadius: 2,
                       color:
-                          isFollower(snapshot.data.documents[index]['follows'])
-                              ? Colors.tealAccent
+                          isFollower(widget.snapshot.data.documents[widget.index]['follows'])
+                              ? Colors.amberAccent
                               : Colors.transparent)
                 ],
               ),
-              child: FlatButton(
+              child: MaterialButton(
                 shape: new RoundedRectangleBorder(
-                    borderRadius: new BorderRadius.circular(10.0)),
-                padding: EdgeInsets.all(5),
-                color: Colors.transparent,
+                    borderRadius: new BorderRadius.circular(8)),
+                padding: EdgeInsets.all(8),
+                color: Theme.of(context).primaryColor.withOpacity(0.5),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -62,10 +82,12 @@ class UserWidget extends StatelessWidget {
                       alignment: Alignment.bottomLeft,
                       children: <Widget>[
                         AvatarWidget(
-                            photoUrl: snapshot.data.documents[index]
+                            photoUrl: widget.snapshot.data.documents[widget.index]
                                 ['photoUrl']),
                         ActiveWidget(
-                            active: snapshot.data.documents[index]['isActive'])
+                            active: widget.snapshot.data.documents[widget.index]['isActive'])
+
+
                       ],
                     ),
                     Expanded(
@@ -75,9 +97,9 @@ class UserWidget extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: <Widget>[
                             NameWidget(
-                              displayName: snapshot.data.documents[index]
+                              displayName: widget.snapshot.data.documents[widget.index]
                                   ['displayName'],
-                              wins: snapshot.data.documents[index]['wins'],
+                              wins: widget.snapshot.data.documents[widget.index]['wins'],
                             ),
                             Expanded(
                                 child: Column(
@@ -88,27 +110,51 @@ class UserWidget extends StatelessWidget {
                                 ),
                               ],
                             )),
-                            snapshot.data.documents[index]['isActive']
-                                ? snapshot.data.documents[index]['player'] == ''
-                                    ? InvitarWidget(snapshot: snapshot, index: index, wizard: wizard)
+                            widget.snapshot.data.documents[widget.index]['isActive']
+                                ? widget.snapshot.data.documents[widget.index]['player'] == ''
+                                    ? InvitarWidget(
+                                        snapshot: widget.snapshot,
+                                        index: widget.index,
+                                        wizard: widget.wizard)
                                     : OcupadoWidget()
-                                : isAvisar(snapshot.data.documents[index]
-                                        ['avisos'])
-                                    ? AvisarWidget(snapshot: snapshot, index: index, wizard: wizard, follows: follows)
-                                    : Container(),
+                                : Container(height: 0, width: 0,),
+                            StreamBuilder(
+                              stream: widget.notRead,
+                              builder: (context, snapshot) {
+                                if(!snapshot.hasData){
+                                  return Container(width: 0,height: 0,);
+                                }else{
+                                  QuerySnapshot values = snapshot.data;
+                                  if(values.documents.length > 0){
+                                    return NotReadWidget(notread: values.documents.length.toString());
+                                  }else{
+                                    return Container(width: 30,height: 0,);
+                                  }
+                                }
+
+                              },
+                            )
                           ],
                         ),
                       ),
                     ),
                   ],
                 ),
-                onPressed: () {},
+                onPressed: () {
+                  BlocProvider.of<GameBloc>(context).add(EChat(
+                    peerId: widget.snapshot.data.documents[widget.index]['uid'],
+                    peerAvatar: widget.snapshot.data.documents[widget.index]['photoUrl'],
+                    peerToken: widget.snapshot.data.documents[widget.index]['pushToken']
+                  ));
+                },
                 onLongPress: () {
-                  isFollower(snapshot.data.documents[index]['follows'])
-                      ? wizard.userRepository.unfollowTo(
-                          snapshot.data.documents[index]['displayName'], follows)
-                      : wizard.userRepository.followTo(
-                          snapshot.data.documents[index]['displayName'], follows);
+                  isFollower(widget.snapshot.data.documents[widget.index]['follows'])
+                      ? widget.wizard.userRepository.unfollowTo(
+                          widget.snapshot.data.documents[widget.index]['displayName'],
+                          widget.follows)
+                      : widget.wizard.userRepository.followTo(
+                          widget.snapshot.data.documents[widget.index]['displayName'],
+                          widget.follows);
                 },
               ),
             ),

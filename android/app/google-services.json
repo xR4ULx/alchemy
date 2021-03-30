@@ -15,19 +15,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "624486728323-or5b7ag91d046bjdsi1hnkubfdo49gmr.apps.googleusercontent.com",
+          "client_id": "624486728323-8ioredph673bcndc4i319sj3ubi0r0b0.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.wizardblink.alchemy",
-            "certificate_hash": "8c97a0e403f3aac366bf01bb50f645b3e687f1d5"
-          }
-        },
-        {
-          "client_id": "624486728323-m6oaaj948ute9kot0rlbaj4tbekeh4qg.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.wizardblink.alchemy",
-            "certificate_hash": "0259e1b0e23e440ce47cd5f81190b3a4a74dcdc5"
+            "certificate_hash": "ed1d2dbd78bf60ef65a0084043e7eaf631e1e7b8"
           }
         },
         {

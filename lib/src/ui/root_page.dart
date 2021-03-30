@@ -3,24 +3,25 @@ import 'package:alchemy/src/services/wizard.dart';
 import 'package:alchemy/src/ui/game/game_page.dart';
 import 'package:alchemy/src/ui/game/request_page.dart';
 import 'package:alchemy/src/ui/game/wait_page.dart';
+import 'package:alchemy/src/ui/messages/messages_page.dart';
 import 'package:alchemy/src/ui/users/users_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../bloc/game_bloc/bloc.dart';
 
 class RootPage extends StatefulWidget {
   final String name;
   final Wizard wizard;
 
-  const RootPage(
-      {Key key, @required this.name, @required this.wizard});
+  const RootPage({Key key, @required this.name, @required this.wizard});
 
   @override
   _RootPageState createState() => _RootPageState();
 }
 
 class _RootPageState extends State<RootPage> {
-  
-  Wizard blink(){
+  Wizard blink() {
     return widget.wizard;
   }
 
@@ -34,14 +35,14 @@ class _RootPageState extends State<RootPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).primaryColor,
       body: BlocProvider<GameBloc>(
         create: (context) => GameBloc(),
         child: BlocBuilder<GameBloc, GameState>(
           // ignore: missing_return
           builder: (context, state) {
             if (state is SHome) {
-              return UsersPage(
-                  name: widget.name, wizard: blink());
+              return UsersPage(name: widget.name, wizard: blink());
             }
             if (state is SWait) {
               return WaitPage(wizard: blink());
@@ -51,6 +52,13 @@ class _RootPageState extends State<RootPage> {
             }
             if (state is SGame) {
               return Game(wizard: blink());
+            }
+            if (state is SChat) {
+              return Messages(
+                  peerId: state.peerId,
+                  peerAvatar: state.peerAvatar,
+                  peerToken: state.peerToken,
+                  wizard: blink());
             }
           },
         ),

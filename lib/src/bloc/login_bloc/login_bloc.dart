@@ -25,8 +25,8 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
 
   Stream<LoginState> _mapLoginWithGooglePressedToState() async* {
     try {
-      await wizard.userRepository.signInWithGoogle().then((_) {
-        wizard.userRepository.setActive(true);
+      await wizard.userRepository.signInWithGoogle().then((_) async{
+        await wizard.userRepository.setActive(true);
       });
       yield LoginState.success();
     } catch (_) {

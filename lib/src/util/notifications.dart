@@ -11,7 +11,7 @@ import 'package:get_it/get_it.dart';
 class Notifications{
 
   User _user = GetIt.I.get<User>();
-  final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =FlutterLocalNotificationsPlugin();
+  final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
   
   void registerNotification() {
@@ -30,19 +30,12 @@ class Notifications{
           ? showNotification(message['notification'])
           : showNotification(message['aps']['alert']);
       return;
-    }, onLaunch: (Map<String, dynamic> message) async{
-      print('onLaunch: $message');
-      Platform.isAndroid
-          ? showNotification(message['notification'])
-          : showNotification(message['aps']['alert']);
-      return;
     });
 
     _firebaseMessaging.getToken().then((token) {
       print('token: $token');
       _setToken(token);
     }).catchError((err) {
-      //Fluttertoast.showToast(msg: err.message.toString());
     });
   }
 
@@ -70,16 +63,11 @@ class Notifications{
         androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
 
     print(message);
-//    print(message['body'].toString());
-//    print(json.encode(message));
 
     await _flutterLocalNotificationsPlugin.show(0, message['title'].toString(),
         message['body'].toString(), platformChannelSpecifics,
         payload: json.encode(message));
 
-//    await flutterLocalNotificationsPlugin.show(
-//        0, 'plain title', 'plain body', platformChannelSpecifics,
-//        payload: 'item x');
   }
 
   void configLocalNotification() {

@@ -8,14 +8,15 @@ class InvitarWidget extends StatelessWidget {
   final int index;
   final Wizard wizard;
 
-  const InvitarWidget({@required this.snapshot, @required this.index, @required this.wizard });
+  const InvitarWidget(
+      {@required this.snapshot, @required this.index, @required this.wizard});
 
   @override
   Widget build(BuildContext context) {
-    return RaisedButton(
+    return MaterialButton(
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(18.0),
-          side: BorderSide(color: Colors.red)),
+          side: BorderSide(color: Colors.deepPurple)),
       onPressed: () {
         if (snapshot.data.documents[index]['isActive'] &&
             snapshot.data.documents[index]['player'] == '') {
@@ -25,7 +26,7 @@ class InvitarWidget extends StatelessWidget {
           BlocProvider.of<GameBloc>(context).add(EWait());
         }
       },
-      color: Colors.red,
+      color: Theme.of(context).primaryColor,
       textColor: Colors.white,
       child: Text("Invitar", style: TextStyle(fontSize: 12)),
     );

@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:meta/meta.dart';
 
 abstract class GameState extends Equatable {
   GameState();
@@ -23,4 +24,13 @@ class SRequest extends GameState {
 class SGame extends GameState {
   @override
   String toString() => 'In Game';
+}
+
+class SChat extends GameState {
+  final String peerId;
+  final String peerAvatar;
+  final String peerToken;
+  SChat({@required this.peerId, @required this.peerAvatar, @required this.peerToken});
+  @override
+  String toString() => 'In Chat';
 }

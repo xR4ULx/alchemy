@@ -13,7 +13,6 @@ import 'package:alchemy/src/services/wizard.dart';
 Potions gridState = new Potions();
 
 class Game extends StatefulWidget {
-  
   final Wizard wizard;
   const Game({Key key, @required this.wizard});
 
@@ -22,7 +21,6 @@ class Game extends StatefulWidget {
 }
 
 class _GameState extends State<Game> with TickerProviderStateMixin {
-
   AnimationController _controller;
   Animation _colorAnimation;
 
@@ -33,12 +31,11 @@ class _GameState extends State<Game> with TickerProviderStateMixin {
   String player;
   int alchemyP1;
   int alchemyP2;
-  
-  Wizard blink(){
+
+  Wizard blink() {
     return widget.wizard;
   }
 
-  
   @override
   void dispose() {
     _controller.dispose();
@@ -77,28 +74,26 @@ class _GameState extends State<Game> with TickerProviderStateMixin {
     };
 
     blink().signaling.onFinishGame = () {
-
       AwesomeDialog(
-            context: context,
-            animType: AnimType.SCALE,
-            dialogType: DialogType.INFO,
-            body: Center(
-              child: Text('${blink().user.adversary} abandono la partida',
-                        style: GoogleFonts.griffy(color: Theme.of(context).primaryColor),
-                        textScaleFactor: 1.2),
-              ),
-            title: 'Resultado',
-            //desc:   'Resultado de la partida',
-            btnOkOnPress: () {
-              blink().user.player = '';
-              blink().user.adversary = '';
-              blink().userRepository.updateUser();
-              gridState.clearPotions();
-              blink().user.incrementWins();
-              blink().signaling.emit('exit-game', true);
-            },
-                 )..show();
-
+        context: context,
+        animType: AnimType.SCALE,
+        dialogType: DialogType.INFO,
+        body: Center(
+          child: Text('${blink().user.adversary} abandono la partida',
+              style: GoogleFonts.griffy(color: Theme.of(context).primaryColor),
+              textScaleFactor: 1.2),
+        ),
+        title: 'Resultado',
+        //desc:   'Resultado de la partida',
+        btnOkOnPress: () {
+          blink().user.player = '';
+          blink().user.adversary = '';
+          blink().userRepository.updateUser();
+          gridState.clearPotions();
+          blink().user.incrementWins();
+          blink().signaling.emit('exit-game', true);
+        },
+      )..show();
     };
 
     super.initState();
@@ -157,7 +152,9 @@ class _GameState extends State<Game> with TickerProviderStateMixin {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            SafeArea(child: SizedBox(),),
+            SafeArea(
+              child: SizedBox(),
+            ),
             Text(
               blink().user.player == player
                   ? 'Turno de ${blink().user.displayName}'
@@ -270,14 +267,13 @@ class _GameState extends State<Game> with TickerProviderStateMixin {
 
     CheckWin check = new CheckWin(player, gridState, _colorAnimation);
     await check.comprobarWin();
-    if(blink().user.player == 'p1'){
-        alchemyP2 = check.winsPlayer;
-    }else{
-        alchemyP1 = check.winsPlayer;
+    if (blink().user.player == 'p1') {
+      alchemyP2 = check.winsPlayer;
+    } else {
+      alchemyP1 = check.winsPlayer;
     }
 
     if (gridState.fullPotions()) {
-      
       String winner = '';
 
       if (alchemyP1 > alchemyP2) {
@@ -285,43 +281,39 @@ class _GameState extends State<Game> with TickerProviderStateMixin {
         if (blink().user.player == 'p1') {
           blink().user.incrementWins();
           winner = blink().user.displayName;
-        }else{
+        } else {
           winner = blink().user.adversary;
         }
-        
       } else if (alchemyP1 == alchemyP2) {
         blink().user.incrementWins();
-      }else{
+      } else {
         // GANA P2
-        if(blink().user.player == 'p1'){
+        if (blink().user.player == 'p1') {
           winner = blink().user.adversary;
-        }else{
+        } else {
           winner = blink().user.displayName;
         }
-
       }
 
       AwesomeDialog(
-            context: context,
-            animType: AnimType.SCALE,
-            dialogType: DialogType.INFO,
-            body: Center(child: 
-              Text(winner != '' ? 'Ganó $winner': 'Empate',
-                        style: GoogleFonts.griffy(color: Theme.of(context).primaryColor),
-                        textScaleFactor: 1.2),
-            ),
-            title: 'Resultado',
-            //desc:   'Resultado de la partida',
-            btnOkOnPress: () {
-              blink().user.player = '';
-              blink().user.adversary = '';
-              blink().userRepository.updateUser();
-              gridState.clearPotions();
-              blink().signaling.emit('exit-game', true);
-            },
-                 )..show();
-
-      
+        context: context,
+        animType: AnimType.SCALE,
+        dialogType: DialogType.INFO,
+        body: Center(
+          child: Text(winner != '' ? 'Ganó $winner' : 'Empate',
+              style: GoogleFonts.griffy(color: Theme.of(context).primaryColor),
+              textScaleFactor: 1.2),
+        ),
+        title: 'Resultado',
+        //desc:   'Resultado de la partida',
+        btnOkOnPress: () {
+          blink().user.player = '';
+          blink().user.adversary = '';
+          blink().userRepository.updateUser();
+          gridState.clearPotions();
+          blink().signaling.emit('exit-game', true);
+        },
+      )..show();
     }
 
     setState(() {});
@@ -342,12 +334,11 @@ class _GameState extends State<Game> with TickerProviderStateMixin {
       if (antPlayer != null) {
         CheckWin check = new CheckWin(antPlayer, gridState, _colorAnimation);
         await check.comprobarWin();
-        if(blink().user.player == 'p1'){
+        if (blink().user.player == 'p1') {
           alchemyP1 = check.winsPlayer;
-        }else{
+        } else {
           alchemyP2 = check.winsPlayer;
         }
-        
       }
 
       blink().signaling.emit('changeTurn', {"player": player, "x": x, "y": y});
@@ -355,45 +346,45 @@ class _GameState extends State<Game> with TickerProviderStateMixin {
       if (gridState.fullPotions()) {
         String winner = '';
 
-      if (alchemyP1 > alchemyP2) {
-        //GANA P1
-        if (blink().user.player == 'p1') {
+        if (alchemyP1 > alchemyP2) {
+          //GANA P1
+          if (blink().user.player == 'p1') {
+            blink().user.incrementWins();
+            winner = blink().user.displayName;
+          } else {
+            winner = blink().user.adversary;
+          }
+        } else if (alchemyP1 == alchemyP2) {
           blink().user.incrementWins();
-          winner = blink().user.displayName;
-        }else{
-          winner = blink().user.adversary;
+        } else {
+          // GANA P2
+          if (blink().user.player == 'p1') {
+            winner = blink().user.adversary;
+          } else {
+            winner = blink().user.displayName;
+          }
         }
-        
-      } else if (alchemyP1 == alchemyP2) {
-        blink().user.incrementWins();
-      }else{
-        // GANA P2
-        if(blink().user.player == 'p1'){
-          winner = blink().user.adversary;
-        }else{
-          winner = blink().user.displayName;
-        }
-      }
 
-      AwesomeDialog(
-            context: context,
-            animType: AnimType.SCALE,
-            dialogType: DialogType.INFO,
-            body: Center(child: 
-            Text(winner != '' ? 'Ganó $winner': 'Empate',
-                        style: GoogleFonts.griffy(color: Theme.of(context).primaryColor),
-                        textScaleFactor: 1.2),
-            ),
-            title: 'Resultado',
-            //desc:   'Resultado de la partida',
-            btnOkOnPress: () {
-              blink().user.player = '';
-              blink().user.adversary = '';
-              blink().userRepository.updateUser();
-              gridState.clearPotions();
-              blink().signaling.emit('exit-game', true);
-            },
-                 )..show();
+        AwesomeDialog(
+          context: context,
+          animType: AnimType.SCALE,
+          dialogType: DialogType.INFO,
+          body: Center(
+            child: Text(winner != '' ? 'Ganó $winner' : 'Empate',
+                style:
+                    GoogleFonts.griffy(color: Theme.of(context).primaryColor),
+                textScaleFactor: 1.2),
+          ),
+          title: 'Resultado',
+          //desc:   'Resultado de la partida',
+          btnOkOnPress: () {
+            blink().user.player = '';
+            blink().user.adversary = '';
+            blink().userRepository.updateUser();
+            gridState.clearPotions();
+            blink().signaling.emit('exit-game', true);
+          },
+        )..show();
       }
     }
 

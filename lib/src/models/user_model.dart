@@ -6,7 +6,7 @@ User userFireFromJson(String str) => User.fromJson(json.decode(str));
 String userFireToJson(User data) => json.encode(data.toJson());
 
 class Users {
-  List<User> items = new List();
+  List<User> items = [];
 
   Users();
 

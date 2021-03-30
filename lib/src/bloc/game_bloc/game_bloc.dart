@@ -6,6 +6,8 @@ import 'package:alchemy/src/util/signaling.dart';
 import 'package:bloc/bloc.dart';
 import 'package:get_it/get_it.dart';
 
+import 'bloc.dart';
+
 class GameBloc extends Bloc<GameEvent, GameState> {
   @override
   GameState get initialState => SHome();
@@ -38,8 +40,6 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       }
     };
 
-
-
     _signaling.onExitGame = () {
       _user.player = '';
       _user.adversary = '';
@@ -63,6 +63,10 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     if (event is EGame) {
       yield* _mapGameToState();
     }
+
+    if (event is EChat) {
+      yield* _mapGameToChat(event.peerId, event.peerAvatar, event.peerToken);
+    }
   }
 
   Stream<GameState> _mapHomeToState() async* {
@@ -79,5 +83,9 @@ class GameBloc extends Bloc<GameEvent, GameState> {
 
   Stream<GameState> _mapGameToState() async* {
     yield SGame();
+  }
+
+  Stream<GameState> _mapGameToChat(peerId, peerAvatar, peerToken) async* {
+    yield SChat(peerId: peerId, peerAvatar: peerAvatar, peerToken: peerToken);
   }
 }
