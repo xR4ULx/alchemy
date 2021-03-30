@@ -10,7 +10,8 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
   RandomParticleBehaviour _particleBehaviour = new RandomParticleBehaviour();
-  ParticleOptions _particleOptions = new ParticleOptions(baseColor: Color(0xFF70DCA9));
+  ParticleOptions _particleOptions =
+      new ParticleOptions(baseColor: Color(0xFF70DCA9));
 
   @override
   void initState() {
@@ -29,47 +30,12 @@ class _SplashScreenState extends State<SplashScreen>
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Center(
-                    child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Image(
-                      image: AssetImage("assets/pocion.png"),
-                      width: MediaQuery.of(context).size.width / 1.7,
-                    ),
-                    SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.02,
-                    ),
-                    Text(
-                      'Alchemy',
-                      style: GoogleFonts.griffy(color: Colors.amber),
-                      textScaleFactor: 5,
-                    ),
-                    SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.05,
-                    ),
-                    Text(
-                      'Loading ...',
-                      style: GoogleFonts.griffy(color: Colors.amber),
-                      textScaleFactor: 3,
-                    ),
-                    SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.05,
-                    ),
-
-                  ],
-                )),
-                Container(
-                  alignment: Alignment.bottomRight,
-                  child:
-                  Padding(
-                    padding: const EdgeInsets.only(right: 20.0),
-                    child: Image(
-                      image: AssetImage("assets/textamber.png"),
-                      height: 80,
-                    ),
+                  child: Image(
+                    fit: BoxFit.fill,
+                    image: AssetImage("assets/pocion.png"),
+                    width: MediaQuery.of(context).size.width / 3,
                   ),
-                )
+                ),
               ],
             )) // This trailing comma makes auto-formatting nicer for build methods.
         );

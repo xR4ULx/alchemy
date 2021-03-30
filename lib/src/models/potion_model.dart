@@ -67,7 +67,7 @@ class Potions {
   }
 
   clearPotions() {
-    potions = new List.generate(_cols, (_) => new List(_rows));
+    potions = List.generate(_cols, (_) => List(_rows));
     for (var c = 0; c < _cols; c++) {
       for (var r = 0; r < _rows; r++) {
         potions[c][r] = new Potion();

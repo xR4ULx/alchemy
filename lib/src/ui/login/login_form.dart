@@ -92,18 +92,7 @@ class _LoginFormState extends State<LoginForm>
                       height: MediaQuery.of(context).size.height * 0.05,
                     ),
                   ],
-                )),
-                Container(
-                  alignment: Alignment.bottomRight,
-                  child:
-                    Padding(
-                      padding: const EdgeInsets.only(right: 12.0),
-                      child: Image(
-                        image: AssetImage("assets/textamber.png"),
-                        height: 80,
-                      ),
-                    ),
-                  )
+                ))
               ],
             ));
       },

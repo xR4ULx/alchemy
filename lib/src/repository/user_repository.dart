@@ -60,7 +60,9 @@ class UserRepository {
 
   // Esta logueado?
   Future<bool> isSignedIn() async {
-    return await _googleSignIn.isSignedIn();
+    final isSignedIn =  await _googleSignIn.isSignedIn();
+    //await Future.delayed(Duration(seconds: 2));
+    return isSignedIn;
   }
 
   Future<bool> setActive(bool active) async {
@@ -119,6 +121,7 @@ class UserRepository {
 
   // Obtener usuario
   Future<String> getUser() async {
+    _firebaseUser = await _firebaseAuth.currentUser();
     return _firebaseUser.displayName;
   }
 

@@ -31,10 +31,13 @@ class AuthenticationBloc
 
   Stream<AuthenticationState> _mapAppStartedToState() async* {
     try {
-      if (await wizard.userRepository.isSignedIn()) {
-        var displayName = await wizard.userRepository.getUser();
-        if (displayName != "") {
-          yield Authenticated(displayName);
+      final _authenticate = await wizard.userRepository.isSignedIn();
+      final _displayName = await wizard.userRepository.getUser();
+
+      if (_authenticate) {
+        if (_displayName != "") {
+          await wizard.userRepository.setActive(true);
+          yield Authenticated(_displayName);
         } else {
           yield Unauthenticated();
         }
